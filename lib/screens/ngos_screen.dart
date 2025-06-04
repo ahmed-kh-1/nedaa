@@ -10,11 +10,7 @@ class NGOsScreen extends StatefulWidget {
 
 class _NGOsScreenState extends State<NGOsScreen> {
   final List<Map<String, dynamic>> _ngos = List.generate(10, _generateNGO);
-  String _searchQuery = '', _selectedCategory = 'الكل';
-  bool _showAvailableOnly = false,
-      _showHighestRated = false,
-      _showNearest = false,
-      _isSearching = false;
+  String _selectedCategory = 'الكل';
 
   static Map<String, dynamic> _generateNGO(int index) {
     final specializations = [
@@ -36,101 +32,49 @@ class _NGOsScreenState extends State<NGOsScreen> {
 
   List<Map<String, dynamic>> get _filteredNgos {
     return _ngos.where((ngo) {
-      final matchesSearch = _searchQuery.isEmpty ||
-          ngo['name'].toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          ngo['specialization']
-              .toLowerCase()
-              .contains(_searchQuery.toLowerCase());
       final matchesCategory = _selectedCategory == 'الكل' ||
           ngo['specialization'] == _selectedCategory;
-      final matchesAvailability = !_showAvailableOnly || ngo['isAvailable'];
-      return matchesSearch && matchesCategory && matchesAvailability;
-    }).toList()
-      ..sort((a, b) {
-        if (_showHighestRated) return b['rating'].compareTo(a['rating']);
-        if (_showNearest) return a['distance'].compareTo(b['distance']);
-        return 0;
-      });
+      return matchesCategory;
+    }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title:
-            _isSearching ? _buildSearchField() : const Text('الجمعيات المتاحة'),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: Icon(_isSearching ? Icons.close : Icons.search),
-            onPressed: () => setState(() {
-              _isSearching = !_isSearching;
-              if (!_isSearching) _searchQuery = '';
-            }),
-          )
-        ],
-      ),
       body: Column(children: [
-        if (_searchQuery.isNotEmpty) _buildSearchIndicator(),
         _buildCategoriesRow(),
-        Expanded(
-          child: _filteredNgos.isEmpty && _searchQuery.isNotEmpty
-              ? _buildNoResults()
-              : _buildNGOsList(),
-        )
+        Expanded(child: _buildNGOsList()),
+        Padding(
+          padding: const EdgeInsets.all(12),
+          child: ElevatedButton.icon(
+            onPressed: () => _showSuggestNGOBottomSheet(context),
+            icon: const Icon(Icons.add),
+            label: const Text('اقتراح جمعية جديدة'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green[600],
+              minimumSize: const Size(double.infinity, 48),
+            ),
+          ),
+        ),
       ]),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.filter_alt),
-        onPressed: () => _showFilterBottomSheet(context),
-      ),
     );
   }
-
-  Widget _buildSearchField() => TextField(
-        autofocus: true,
-        decoration: const InputDecoration(
-            hintText: 'ابحث عن جمعية...', border: InputBorder.none),
-        onChanged: (value) => setState(() => _searchQuery = value),
-      );
-
-  Widget _buildSearchIndicator() => Container(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-        color: Colors.grey[200],
-        child: Row(children: [
-          Text('نتائج البحث عن: "$_searchQuery"',
-              style: const TextStyle(fontWeight: FontWeight.bold)),
-          const Spacer(),
-          IconButton(
-              icon: const Icon(Icons.close, size: 18),
-              onPressed: () => setState(() => _searchQuery = ''))
-        ]),
-      );
-
-  Widget _buildNoResults() => Center(
-          child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.search_off, size: 60, color: Colors.grey),
-          const SizedBox(height: 16),
-          Text('لا توجد نتائج لـ "$_searchQuery"',
-              style: const TextStyle(fontSize: 18, color: Colors.grey)),
-          TextButton(
-              onPressed: () => setState(() => _searchQuery = ''),
-              child: const Text('إعادة تعيين البحث'))
-        ],
-      ));
 
   Widget _buildNGOsList() => ListView.builder(
         padding: const EdgeInsets.all(8),
         itemCount: _filteredNgos.length,
         itemBuilder: (context, index) => _buildNGOCard(
-            context: context, ngo: _filteredNgos[index], index: index),
+          context: context,
+          ngo: _filteredNgos[index],
+          index: index,
+        ),
       );
 
-  Widget _buildNGOCard(
-          {required BuildContext context,
-          required Map<String, dynamic> ngo,
-          required int index}) =>
+  Widget _buildNGOCard({
+    required BuildContext context,
+    required Map<String, dynamic> ngo,
+    required int index,
+  }) =>
       Card(
         elevation: 3,
         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
@@ -146,6 +90,7 @@ class _NGOsScreenState extends State<NGOsScreen> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
+                    // ignore: deprecated_member_use
                     color: _getSpecializationColor(index).withOpacity(0.2),
                     shape: BoxShape.circle,
                   ),
@@ -180,6 +125,7 @@ class _NGOsScreenState extends State<NGOsScreen> {
                   padding:
                       const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                   decoration: BoxDecoration(
+                    // ignore: deprecated_member_use
                     color: Colors.red.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(4),
                   ),
@@ -223,7 +169,7 @@ class _NGOsScreenState extends State<NGOsScreen> {
       );
 
   Widget _buildCategoryChip(int index) {
-    final categories = const ['الكل', 'الإغاثة', 'الصحة', 'التعليم', 'البيئة'];
+    const categories = ['الكل', 'الإغاثة', 'الصحة', 'التعليم', 'البيئة'];
     return Padding(
       padding: const EdgeInsets.all(8),
       child: ChoiceChip(
@@ -255,49 +201,6 @@ class _NGOsScreenState extends State<NGOsScreen> {
         Colors.green,
         Colors.orange
       ][index % 5];
-
-  void _showFilterBottomSheet(BuildContext context) => showModalBottomSheet(
-        context: context,
-        builder: (context) => Container(
-          padding: const EdgeInsets.all(16),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            const Text('تصفية النتائج',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const Divider(),
-            _buildFilterOption('الجمعيات المتاحة الآن فقط', _showAvailableOnly,
-                (v) => setState(() => _showAvailableOnly = v)),
-            _buildFilterOption(
-                'الأعلى تقييمًا',
-                _showHighestRated,
-                (v) => setState(() {
-                      _showHighestRated = v;
-                      if (v) _showNearest = false;
-                    })),
-            _buildFilterOption(
-                'الأقرب إليك',
-                _showNearest,
-                (v) => setState(() {
-                      _showNearest = v;
-                      if (v) _showHighestRated = false;
-                    })),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                child: const Text('تطبيق التصفية'),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ),
-          ]),
-        ),
-      );
-
-  Widget _buildFilterOption(
-          String title, bool value, Function(bool) onChanged) =>
-      ListTile(
-        title: Text(title),
-        trailing: Switch(value: value, onChanged: onChanged),
-      );
 
   void _showNGODetails(BuildContext context, String name, String phone) =>
       showModalBottomSheet(
@@ -352,8 +255,10 @@ class _NGOsScreenState extends State<NGOsScreen> {
     if (await canLaunchUrl(url)) {
       await launchUrl(url);
     } else {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('لا يمكن الاتصال بالرقم: $phoneNumber')));
+        SnackBar(content: Text('لا يمكن الاتصال بالرقم: $phoneNumber')),
+      );
     }
   }
 
@@ -365,4 +270,58 @@ class _NGOsScreenState extends State<NGOsScreen> {
           Text(text),
         ]),
       );
+
+  void _showSuggestNGOBottomSheet(BuildContext context) {
+    final nameController = TextEditingController();
+    final phoneController = TextEditingController();
+    String selectedSpecialization = 'الإغاثة';
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => Padding(
+        padding: MediaQuery.of(context).viewInsets,
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            const Text('اقتراح جمعية جديدة',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            TextField(
+              controller: nameController,
+              decoration: const InputDecoration(labelText: 'اسم الجمعية'),
+            ),
+            TextField(
+              controller: phoneController,
+              keyboardType: TextInputType.phone,
+              decoration: const InputDecoration(labelText: 'رقم الهاتف'),
+            ),
+            DropdownButtonFormField<String>(
+              value: selectedSpecialization,
+              items: ['الإغاثة', 'الصحة', 'التعليم', 'البيئة', 'الإسكان']
+                  .map((spec) =>
+                      DropdownMenuItem(value: spec, child: Text(spec)))
+                  .toList(),
+              onChanged: (value) => selectedSpecialization = value ?? 'الإغاثة',
+              decoration: const InputDecoration(labelText: 'تخصص الجمعية'),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                child: const Text('إرسال الاقتراح'),
+                onPressed: () {
+                  print('تم اقتراح جمعية:');
+                  print('الاسم: ${nameController.text}');
+                  print('الهاتف: ${phoneController.text}');
+                  print('التخصص: $selectedSpecialization');
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+          ]),
+        ),
+      ),
+    );
+  }
 }

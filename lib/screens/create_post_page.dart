@@ -63,10 +63,38 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     }
   }
 
-  Future<void> _takePicture() async {
+  Future<void> _chooseImageSource() async {
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_camera),
+              title: const Text('التقاط صورة بالكاميرا'),
+              onTap: () {
+                Navigator.pop(ctx);
+                _pickImage(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('اختيار من المعرض'),
+              onTap: () {
+                Navigator.pop(ctx);
+                _pickImage(ImageSource.gallery);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(
-      source: ImageSource.gallery,
+      source: source,
       imageQuality: 70,
       maxWidth: 800,
     );
@@ -86,7 +114,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     setState(() => _isLoading = true);
 
     try {
-      // محاكاة إرسال البيانات
       await Future.delayed(const Duration(seconds: 2));
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -144,7 +171,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               GestureDetector(
-                onTap: _takePicture,
+                onTap: _chooseImageSource,
                 child: Container(
                   height: 200,
                   decoration: BoxDecoration(
@@ -174,14 +201,43 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                             ),
                           ],
                         )
-                      : ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.file(
-                            _selectedImage!,
-                            width: double.infinity,
-                            height: double.infinity,
-                            fit: BoxFit.cover,
-                          ),
+                      : Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.file(
+                                _selectedImage!,
+                                width: double.infinity,
+                                height: double.infinity,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Positioned(
+                              top: 8,
+                              right: 8,
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _selectedImage = null;
+                                  });
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.black54,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(5),
+                                    child: Icon(
+                                      Icons.close,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                 ),
               ),
@@ -274,7 +330,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 ),
               ),
               const SizedBox(height: 25),
-              //TODO
               Text(
                 'الموقع',
                 style: TextStyle(
@@ -291,7 +346,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.1),
-                      spreadRadius: 2,
+                      spreadRadius: 3,
                       blurRadius: 5,
                       offset: const Offset(0, 3),
                     ),

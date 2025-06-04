@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:call/screens/ngos_screen.dart';
 import 'package:call/screens/profile_screen.dart';
-import 'package:call/screens/settings_screen.dart';
 import 'package:call/widgets/post_card.dart';
 import 'package:call/models/post_model.dart';
 import 'package:call/services/post_service.dart';
@@ -46,10 +45,8 @@ class _HomeScreenState extends State<HomeScreen>
 
   void _adoptPost(int index, String ngoName) {
     setState(() {
-      _posts[index] = _posts[index].copyWith(
-        isAdopted: true,
-        adoptedBy: ngoName,
-      );
+      _posts[index] =
+          _posts[index].copyWith(isAdopted: true, adoptedBy: ngoName);
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -104,34 +101,27 @@ class _HomeScreenState extends State<HomeScreen>
           ? _isSearching
               ? TextField(
                   controller: _searchController,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onPrimary,
-                  ),
+                  style: theme.textTheme.bodyMedium
+                      ?.copyWith(color: theme.colorScheme.onPrimary),
                   decoration: InputDecoration(
                     hintText: 'ابحث عن بلاغات...',
                     hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                      // ignore: deprecated_member_use
                       color: theme.colorScheme.onPrimary.withOpacity(0.6),
                     ),
                     border: InputBorder.none,
-                    prefixIcon: Icon(
-                      Icons.search,
-                      color: theme.colorScheme.secondary,
-                    ),
+                    prefixIcon:
+                        Icon(Icons.search, color: theme.colorScheme.secondary),
                   ),
                 )
-              : Text(
-                  'نداء',
+              : Text('نداء',
                   style: theme.textTheme.headlineMedium?.copyWith(
-                    color: theme.colorScheme.secondary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                )
-          : Text(
-              _getAppBarTitle(),
-              style: theme.textTheme.headlineSmall?.copyWith(
-                color: theme.colorScheme.onPrimary,
-              ),
-            ),
+                      color: theme.colorScheme.secondary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 30))
+          : Text(_getAppBarTitle(),
+              style: theme.textTheme.headlineSmall
+                  ?.copyWith(color: theme.colorScheme.onPrimary)),
       actions: [
         if (_currentIndex == 0)
           IconButton(
@@ -146,11 +136,6 @@ class _HomeScreenState extends State<HomeScreen>
             ),
             onPressed: () => setState(() => _isSearching = !_isSearching),
           ),
-        Icon(
-          Icons.sos,
-          color: theme.colorScheme.onSurface,
-          size: 40,
-        ),
       ],
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(60),
@@ -162,18 +147,12 @@ class _HomeScreenState extends State<HomeScreen>
               gradient: LinearGradient(
                 colors: [
                   theme.primaryColor,
-                  theme.colorScheme.primaryContainer.withOpacity(0.8)
+                  // ignore: deprecated_member_use
+                  theme.colorScheme.primaryContainer.withOpacity(0.8),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
-                  blurRadius: 10,
-                  spreadRadius: 2,
-                ),
-              ],
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -181,8 +160,6 @@ class _HomeScreenState extends State<HomeScreen>
                 _buildNavItem(0, Icons.home_filled, 'المنشورات', theme),
                 _buildNavItem(1, Icons.people_alt, 'الجمعيات', theme),
                 _buildNavItem(2, Icons.person_pin, 'حسابي', theme),
-                _buildNavItem(
-                    3, Icons.settings_applications, 'الإعدادات', theme),
               ],
             ),
           ),
@@ -209,6 +186,7 @@ class _HomeScreenState extends State<HomeScreen>
                     padding: const EdgeInsets.all(16),
                     itemCount: _posts.length,
                     itemBuilder: (context, index) {
+                      final post = _posts[index];
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         child: AnimatedScale(
@@ -220,28 +198,27 @@ class _HomeScreenState extends State<HomeScreen>
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15),
                               side: BorderSide(
-                                color: theme.colorScheme.primaryContainer
-                                    .withOpacity(0.3),
-                                width: 1,
-                              ),
+                                  color: theme.colorScheme.primaryContainer
+                                      // ignore: deprecated_member_use
+                                      .withOpacity(0.3),
+                                  width: 1),
                             ),
                             child: Column(
                               children: [
                                 Stack(
+                                  alignment: Alignment.topCenter,
                                   children: [
                                     ClipRRect(
                                       borderRadius: const BorderRadius.vertical(
                                           top: Radius.circular(15)),
-                                      child: PostCard(post: _posts[index]),
+                                      child: PostCard(post: post),
                                     ),
-                                    if (_posts[index].isAdopted)
+                                    if (post.isAdopted)
                                       Positioned(
                                         top: 10,
-                                        right: 10,
                                         child: GestureDetector(
                                           onTap: () => _showAdoptionInfo(
-                                              context,
-                                              _posts[index].adoptedBy ?? ''),
+                                              context, post.adoptedBy ?? ''),
                                           child: Container(
                                             padding: const EdgeInsets.all(6),
                                             decoration: BoxDecoration(
@@ -249,11 +226,8 @@ class _HomeScreenState extends State<HomeScreen>
                                                   theme.colorScheme.secondary,
                                               shape: BoxShape.circle,
                                             ),
-                                            child: const Icon(
-                                              Icons.star,
-                                              color: Colors.white,
-                                              size: 24,
-                                            ),
+                                            child: const Icon(Icons.star,
+                                                color: Colors.white, size: 24),
                                           ),
                                         ),
                                       ),
@@ -264,30 +238,28 @@ class _HomeScreenState extends State<HomeScreen>
                                       horizontal: 16, vertical: 8),
                                   decoration: BoxDecoration(
                                     color: theme.colorScheme.primaryContainer
+                                        // ignore: deprecated_member_use
                                         .withOpacity(0.7),
                                     borderRadius: const BorderRadius.vertical(
                                         bottom: Radius.circular(15)),
                                   ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      IconButton(
-                                        icon: FaIcon(
-                                          FontAwesomeIcons.handHoldingHeart,
-                                          color: _posts[index].isAdopted
-                                              ? Colors.grey
-                                              : theme.colorScheme.onPrimary,
-                                          size: 44,
-                                        ),
-                                        onPressed: _posts[index].isAdopted
-                                            ? null
-                                            : () {
-                                                const ngoName = 'جمعية الإغاثة';
-                                                _adoptPost(index, ngoName);
-                                              },
-                                        tooltip: 'تبني المشكلة',
+                                  child: Center(
+                                    child: IconButton(
+                                      icon: FaIcon(
+                                        FontAwesomeIcons.handHoldingHeart,
+                                        color: post.isAdopted
+                                            ? Colors.grey
+                                            : theme.colorScheme.onPrimary,
+                                        size: 44,
                                       ),
-                                    ],
+                                      onPressed: post.isAdopted
+                                          ? null
+                                          : () {
+                                              const ngoName = 'جمعية الإغاثة';
+                                              _adoptPost(index, ngoName);
+                                            },
+                                      tooltip: 'تبني المشكلة',
+                                    ),
                                   ),
                                 ),
                               ],
@@ -300,7 +272,6 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
                 const NGOsScreen(),
                 const ProfileScreen(),
-                const SettingsScreen(),
               ],
             ),
           ),
@@ -332,6 +303,7 @@ class _HomeScreenState extends State<HomeScreen>
             boxShadow: [
               BoxShadow(
                 color: theme.colorScheme.secondary
+                    // ignore: deprecated_member_use
                     .withOpacity(_isFabPressed ? 0.4 : 0.6),
                 blurRadius: _isFabPressed ? 8 : 15,
                 spreadRadius: _isFabPressed ? 1 : 3,
@@ -342,11 +314,7 @@ class _HomeScreenState extends State<HomeScreen>
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.warning,
-                color: theme.colorScheme.onPrimary,
-                size: 28,
-              ),
+              Icon(Icons.warning, color: theme.colorScheme.onPrimary, size: 28),
               const SizedBox(width: 10),
               Text(
                 'بلاغ طارئ',
@@ -372,30 +340,27 @@ class _HomeScreenState extends State<HomeScreen>
         decoration: BoxDecoration(
           border: isActive
               ? Border(
-                  bottom: BorderSide(
-                    color: theme.colorScheme.secondary,
-                    width: 3,
-                  ),
-                )
+                  bottom:
+                      BorderSide(color: theme.colorScheme.secondary, width: 3))
               : null,
         ),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              color: isActive
-                  ? theme.colorScheme.secondary
-                  : theme.colorScheme.onPrimary.withOpacity(0.7),
-              size: 24,
-            ),
+            Icon(icon,
+                color: isActive
+                    ? theme.colorScheme.secondary
+                    // ignore: deprecated_member_use
+                    : theme.colorScheme.onPrimary.withOpacity(0.7),
+                size: 24),
             const SizedBox(height: 4),
             Text(
               label,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: isActive
                     ? theme.colorScheme.secondary
+                    // ignore: deprecated_member_use
                     : theme.colorScheme.onPrimary.withOpacity(0.7),
                 fontWeight: FontWeight.bold,
               ),
@@ -408,12 +373,6 @@ class _HomeScreenState extends State<HomeScreen>
 
   String _getAppBarTitle() {
     switch (_currentIndex) {
-      case 1:
-        return 'الجمعيات';
-      case 2:
-        return 'حسابي';
-      case 3:
-        return 'الإعدادات';
       default:
         return 'نداء';
     }

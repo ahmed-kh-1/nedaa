@@ -153,8 +153,8 @@ class _AdoptionScreenState extends State<AdoptionScreen> {
           BoxShadow(
             // ignore: deprecated_member_use
             color: Colors.grey.withOpacity(0.1),
-            blurRadius: 5,
-            spreadRadius: 2,
+            blurRadius: 100,
+            spreadRadius: 100,
           ),
         ],
         // ignore: deprecated_member_use

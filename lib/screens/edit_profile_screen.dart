@@ -38,7 +38,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   radius: 50,
                   backgroundImage: _profileImage != null
                       ? NetworkImage(_profileImage!)
-                      : const NetworkImage('https://example.com/avatar.jpg'),
+                      : const NetworkImage('https://i.pravatar.cc/150?img=8'),
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.black54,
@@ -131,7 +131,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void _changeProfileImage() {
     // محاكاة اختيار صورة من المعرض
     setState(() {
-      _profileImage = 'https://example.com/new_avatar.jpg';
+      _profileImage = 'https://i.pravatar.cc/150?img=9';
     });
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('تم تغيير صورة الملف الشخصي')),

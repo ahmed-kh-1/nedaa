@@ -9,17 +9,13 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('حسابي'),
-        centerTitle: true,
-      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             const SizedBox(height: 20),
             const CircleAvatar(
               radius: 50,
-              backgroundImage: NetworkImage('https://example.com/avatar.jpg'),
+              backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=8'),
             ),
             const SizedBox(height: 16),
             const Text(

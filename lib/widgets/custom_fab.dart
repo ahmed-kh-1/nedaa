@@ -30,7 +30,7 @@ class EmergencyFab extends StatelessWidget {
             boxShadow: [
               BoxShadow(
                 // ignore: deprecated_member_use
-                color: Colors.red.withOpacity(0.4),
+                color: const Color.fromARGB(255, 149, 229, 11).withOpacity(0.4),
                 blurRadius: isPressed ? 8 : 15,
                 spreadRadius: isPressed ? 1 : 3,
                 offset: const Offset(0, 5),
@@ -43,7 +43,7 @@ class EmergencyFab extends StatelessWidget {
               Icon(
                 Icons.warning_amber_rounded,
                 color: Colors.white,
-                size: 28,
+                size: 100,
               ),
               SizedBox(width: 10),
               Text(

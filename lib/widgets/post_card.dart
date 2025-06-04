@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/post_model.dart';
+import 'CommentPage.dart';
 
 class PostCard extends StatefulWidget {
   final PostModel post;
@@ -27,52 +28,58 @@ class _PostCardState extends State<PostCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      child: InkWell(
-        onTap: widget.onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  const CircleAvatar(
-                    radius: 20,
-                    backgroundImage:
-                        NetworkImage('https://example.com/avatar.jpg'),
-                  ),
-                  const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(widget.post.userName),
-                      Text(widget.post.timeAgo),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Text(
-                widget.post.title,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      child: Card(
+        margin: EdgeInsets.zero,
+        elevation: 0,
+        child: InkWell(
+          onTap: widget.onTap,
+          child: Padding(
+            padding:
+                const EdgeInsets.only(top: 30, left: 16, right: 16, bottom: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const CircleAvatar(
+                      radius: 50,
+                      backgroundImage:
+                          NetworkImage('https://i.pravatar.cc/150?img=8'),
+                    ),
+                    const SizedBox(width: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(widget.post.userName),
+                        Text(widget.post.timeAgo),
+                      ],
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(widget.post.description),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildLikeButton(),
-                  _buildCommentButton(context),
-                  _buildShareButton(context),
-                ],
-              ),
-            ],
+                const SizedBox(height: 16),
+                Text(
+                  widget.post.title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(widget.post.description),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _buildLikeButton(),
+                    _buildCommentButton(context),
+                    _buildShareButton(context),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -101,7 +108,7 @@ class _PostCardState extends State<PostCard> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CommentsScreen(post: widget.post),
+            builder: (context) => CommentPage(post: widget.post),
           ),
         );
       },
@@ -274,150 +281,5 @@ class _PostCardState extends State<PostCard> {
         ),
       ),
     );
-  }
-}
-
-class CommentsScreen extends StatefulWidget {
-  final PostModel post;
-
-  const CommentsScreen({super.key, required this.post});
-
-  @override
-  State<CommentsScreen> createState() => _CommentsScreenState();
-}
-
-class _CommentsScreenState extends State<CommentsScreen> {
-  final TextEditingController _commentController = TextEditingController();
-  late final List<String> _comments = widget.post.savedComments ?? [];
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('التعليقات'),
-        centerTitle: true,
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: _comments.isEmpty
-                ? const Center(child: Text('لا توجد تعليقات بعد'))
-                : ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: _comments.length,
-                    itemBuilder: (context, index) {
-                      return _buildCommentItem(_comments[index], index);
-                    },
-                  ),
-          ),
-          _buildCommentInput(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCommentItem(String comment, int index) {
-    return GestureDetector(
-      onLongPress: () => _showDeleteDialog(index),
-      child: Card(
-        margin: const EdgeInsets.only(bottom: 12),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  const CircleAvatar(
-                    radius: 16,
-                    backgroundImage:
-                        NetworkImage('https://example.com/avatar.jpg'),
-                  ),
-                  const SizedBox(width: 8),
-                  const Text('مستخدم'),
-                  const Spacer(),
-                  Text(
-                    'الآن',
-                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(comment),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showDeleteDialog(int index) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('حذف التعليق'),
-        content: const Text('هل أنت متأكد أنك تريد حذف هذا التعليق؟'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('إلغاء'),
-          ),
-          TextButton(
-            onPressed: () {
-              setState(() {
-                _comments.removeAt(index);
-                widget.post.savedComments = _comments;
-              });
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('تم حذف التعليق')),
-              );
-            },
-            child: const Text('حذف', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCommentInput() {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Colors.grey[100],
-        border: Border(top: BorderSide(color: Colors.grey[300]!)),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              controller: _commentController,
-              decoration: const InputDecoration(
-                hintText: 'اكتب تعليقاً...',
-                border: InputBorder.none,
-              ),
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.send, color: Colors.blue),
-            onPressed: () {
-              if (_commentController.text.isNotEmpty) {
-                setState(() {
-                  _comments.add(_commentController.text);
-                  widget.post.savedComments = _comments;
-                  _commentController.clear();
-                });
-              }
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _commentController.dispose();
-    super.dispose();
   }
 }
