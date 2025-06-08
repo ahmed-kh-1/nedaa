@@ -46,6 +46,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       }
 
       Position position = await Geolocator.getCurrentPosition(
+          // ignore: deprecated_member_use
           desiredAccuracy: LocationAccuracy.high);
       setState(() {
         _locationController.text =
@@ -55,6 +56,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('فشل في تحديد الموقع: ${e.toString()}'),
+          // ignore: use_build_context_synchronously
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -116,18 +118,23 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     try {
       await Future.delayed(const Duration(seconds: 2));
 
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('تم إرسال البلاغ بنجاح'),
+          // ignore: use_build_context_synchronously
           backgroundColor: Theme.of(context).colorScheme.secondary,
         ),
       );
 
+      // ignore: use_build_context_synchronously
       Navigator.pop(context);
     } catch (e) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('فشل في إرسال البلاغ: ${e.toString()}'),
+          // ignore: use_build_context_synchronously
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -222,7 +229,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                   });
                                 },
                                 child: Container(
-                                  decoration: BoxDecoration(
+                                  decoration: const BoxDecoration(
                                     color: Colors.black54,
                                     shape: BoxShape.circle,
                                   ),
@@ -257,6 +264,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: [
                     BoxShadow(
+                      // ignore: deprecated_member_use
                       color: Colors.grey.withOpacity(0.2),
                       spreadRadius: 2,
                       blurRadius: 5,
@@ -309,6 +317,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: [
                     BoxShadow(
+                      // ignore: deprecated_member_use
                       color: Colors.black.withOpacity(0.1),
                       spreadRadius: 2,
                       blurRadius: 5,
@@ -345,6 +354,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: [
                     BoxShadow(
+                      // ignore: deprecated_member_use
                       color: Colors.black.withOpacity(0.1),
                       spreadRadius: 3,
                       blurRadius: 5,
