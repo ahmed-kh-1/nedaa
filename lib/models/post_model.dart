@@ -39,6 +39,8 @@ class PostModel {
 
   List<String>? get savedComments => _savedComments;
 
+  bool get isLiked => false;
+
   set savedComments(List<String>? comments) {
     _savedComments = comments;
   }
@@ -53,6 +55,7 @@ class PostModel {
     List<String>? savedComments,
     bool? isAdopted,
     String? adoptedBy,
+    required bool isLiked,
   }) {
     return PostModel(
       userName: userName ?? this.userName,

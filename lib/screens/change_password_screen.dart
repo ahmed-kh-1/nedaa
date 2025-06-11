@@ -1,3 +1,5 @@
+import 'package:call/widgets/password_button.dart';
+import 'package:call/widgets/password_form_field.dart';
 import 'package:flutter/material.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
@@ -29,26 +31,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           key: _formKey,
           child: Column(
             children: [
-              TextFormField(
+              PasswordFormField(
                 controller: _currentPasswordController,
-                decoration: InputDecoration(
-                  labelText: 'كلمة المرور الحالية',
-                  prefixIcon: const Icon(Icons.lock),
-                  border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureCurrentPassword
-                          ? Icons.visibility
-                          : Icons.visibility_off,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _obscureCurrentPassword = !_obscureCurrentPassword;
-                      });
-                    },
-                  ),
-                ),
+                label: 'كلمة المرور الحالية',
                 obscureText: _obscureCurrentPassword,
+                prefixIcon: Icons.lock,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'الرجاء إدخال كلمة المرور الحالية';
@@ -58,28 +45,16 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   }
                   return null;
                 },
+                onToggleVisibility: () => setState(() {
+                  _obscureCurrentPassword = !_obscureCurrentPassword;
+                }),
               ),
               const SizedBox(height: 16),
-              TextFormField(
+              PasswordFormField(
                 controller: _newPasswordController,
-                decoration: InputDecoration(
-                  labelText: 'كلمة المرور الجديدة',
-                  prefixIcon: const Icon(Icons.lock_outline),
-                  border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureNewPassword
-                          ? Icons.visibility
-                          : Icons.visibility_off,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _obscureNewPassword = !_obscureNewPassword;
-                      });
-                    },
-                  ),
-                ),
+                label: 'كلمة المرور الجديدة',
                 obscureText: _obscureNewPassword,
+                prefixIcon: Icons.lock_outline,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'الرجاء إدخال كلمة المرور الجديدة';
@@ -89,28 +64,16 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   }
                   return null;
                 },
+                onToggleVisibility: () => setState(() {
+                  _obscureNewPassword = !_obscureNewPassword;
+                }),
               ),
               const SizedBox(height: 16),
-              TextFormField(
+              PasswordFormField(
                 controller: _confirmPasswordController,
-                decoration: InputDecoration(
-                  labelText: 'تأكيد كلمة المرور الجديدة',
-                  prefixIcon: const Icon(Icons.lock_reset),
-                  border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureConfirmPassword
-                          ? Icons.visibility
-                          : Icons.visibility_off,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _obscureConfirmPassword = !_obscureConfirmPassword;
-                      });
-                    },
-                  ),
-                ),
+                label: 'تأكيد كلمة المرور الجديدة',
                 obscureText: _obscureConfirmPassword,
+                prefixIcon: Icons.lock_reset,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'الرجاء تأكيد كلمة المرور الجديدة';
@@ -120,20 +83,14 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   }
                   return null;
                 },
+                onToggleVisibility: () => setState(() {
+                  _obscureConfirmPassword = !_obscureConfirmPassword;
+                }),
               ),
               const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _changePassword,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text('تغيير كلمة المرور'),
-                ),
+              PasswordButton(
+                onPressed: () => _changePassword(context),
+                label: 'تغيير كلمة المرور',
               ),
             ],
           ),
@@ -142,7 +99,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     );
   }
 
-  void _changePassword() {
+  void _changePassword(BuildContext context) {
     if (_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('تم تغيير كلمة المرور بنجاح')),

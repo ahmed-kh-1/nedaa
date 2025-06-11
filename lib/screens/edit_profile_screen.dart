@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:call/widgets/account_text_field.dart';
+import 'package:call/widgets/delete_account_button.dart';
+import 'package:call/widgets/delete_account_dialog.dart';
+import 'package:call/widgets/profile_image_picker.dart';
+import 'package:call/widgets/save_button.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -32,95 +37,32 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           key: _formKey,
           child: Column(
             children: [
-              GestureDetector(
-                onTap: _changeProfileImage,
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundImage: _profileImage != null
-                      ? NetworkImage(_profileImage!)
-                      : const NetworkImage('https://i.pravatar.cc/150?img=8'),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.black54,
-                      borderRadius: BorderRadius.circular(50),
-                    ),
-                    child: const Icon(Icons.camera_alt, color: Colors.white),
-                  ),
-                ),
+              ProfileImagePicker(
+                imageUrl: _profileImage,
+                onImageChanged: () => _changeProfileImage(),
               ),
               const SizedBox(height: 20),
-              TextFormField(
+              AccountTextField(
                 controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: 'البريد الإلكتروني',
-                  prefixIcon: Icon(Icons.email),
-                  border: OutlineInputBorder(),
-                ),
+                label: 'البريد الإلكتروني',
+                icon: Icons.email,
                 keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'الرجاء إدخال البريد الإلكتروني';
-                  }
-                  if (!value.contains('@')) {
-                    return 'البريد الإلكتروني غير صالح';
-                  }
-                  return null;
-                },
+                validator: _validateEmail,
               ),
               const SizedBox(height: 16),
-              TextFormField(
+              AccountTextField(
                 controller: _phoneController,
-                decoration: const InputDecoration(
-                  labelText: 'رقم الجوال',
-                  prefixIcon: Icon(Icons.phone),
-                  border: OutlineInputBorder(),
-                ),
+                label: 'رقم الجوال',
+                icon: Icons.phone,
                 keyboardType: TextInputType.phone,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'الرجاء إدخال رقم الجوال';
-                  }
-                  if (value.length < 10) {
-                    return 'رقم الجوال يجب أن يكون 10 أرقام على الأقل';
-                  }
-                  return null;
-                },
+                validator: _validatePhone,
               ),
               const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _saveProfile,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text('حفظ التغييرات'),
-                ),
-              ),
+              SaveButton(onPressed: _saveProfile),
               const SizedBox(height: 20),
               const Divider(),
               const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  label: const Text(
-                    'حذف الحساب',
-                    style: TextStyle(color: Colors.red),
-                  ),
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    side: const BorderSide(color: Colors.red),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onPressed: _showDeleteAccountDialog,
-                ),
-              ),
+              DeleteAccountButton(onPressed: _showDeleteAccountDialog),
             ],
           ),
         ),
@@ -128,11 +70,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
+  String? _validateEmail(String? value) {
+    if (value == null || value.isEmpty) return 'الرجاء إدخال البريد الإلكتروني';
+    if (!value.contains('@')) return 'البريد الإلكتروني غير صالح';
+    return null;
+  }
+
+  String? _validatePhone(String? value) {
+    if (value == null || value.isEmpty) return 'الرجاء إدخال رقم الجوال';
+    if (value.length < 10) return 'رقم الجوال يجب أن يكون 10 أرقام على الأقل';
+    return null;
+  }
+
   void _changeProfileImage() {
-    // محاكاة اختيار صورة من المعرض
-    setState(() {
-      _profileImage = 'https://i.pravatar.cc/150?img=9';
-    });
+    setState(() => _profileImage = 'https://i.pravatar.cc/150?img=9');
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('تم تغيير صورة الملف الشخصي')),
     );
@@ -147,53 +98,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  void _showDeleteAccountDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('حذف الحساب'),
-        content: const Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('هل أنت متأكد أنك تريد حذف حسابك؟'),
-            SizedBox(height: 8),
-            Text(
-              'سيتم حذف جميع بياناتك بشكل دائم ولن تتمكن من استرجاعها.',
-              style: TextStyle(color: Colors.red),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('إلغاء'),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-            ),
-            onPressed: _deleteAccount,
-            child: const Text('حذف الحساب'),
-          ),
-        ],
-      ),
-    );
-  }
+  void _showDeleteAccountDialog() => showDialog(
+        context: context,
+        builder: (context) => DeleteAccountDialog(deleteAction: _deleteAccount),
+      );
 
   void _deleteAccount() {
-    // محاكاة عملية حذف الحساب
-    Navigator.pop(context); // إغلاق dialog
-    Navigator.pop(context); // العودة للشاشة السابقة
-
+    Navigator.pop(context); // Close dialog
+    Navigator.pop(context); // Return to previous screen
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('تم حذف الحساب بنجاح'),
-        duration: Duration(seconds: 2),
-      ),
+      const SnackBar(content: Text('تم حذف الحساب بنجاح')),
     );
-
-    // هنا يمكنك إضافة كود حذف الحساب الفعلي من الخادم
+    // Actual delete logic would go here
   }
 
   @override

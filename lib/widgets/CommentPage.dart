@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// ignore: depend_on_referenced_packages
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/post_model.dart';
 
@@ -183,7 +182,10 @@ class _CommentPageState extends State<CommentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('تعليقات: ${widget.post.title}'),
+        title: Text(
+          'التعليقات ',
+          style: TextStyle(fontSize: 20),
+        ),
       ),
       body: Column(
         children: [

@@ -1,3 +1,8 @@
+import 'package:call/widgets/create_post/description_text_field.dart';
+import 'package:call/widgets/create_post/emergency_type_dropdown.dart';
+import 'package:call/widgets/create_post/image_picker_card.dart';
+import 'package:call/widgets/create_post/location_text_field.dart';
+import 'package:call/widgets/create_post/submit_button.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
@@ -56,7 +61,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('فشل في تحديد الموقع: ${e.toString()}'),
-          // ignore: use_build_context_synchronously
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -118,23 +122,18 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     try {
       await Future.delayed(const Duration(seconds: 2));
 
-      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('تم إرسال البلاغ بنجاح'),
-          // ignore: use_build_context_synchronously
           backgroundColor: Theme.of(context).colorScheme.secondary,
         ),
       );
 
-      // ignore: use_build_context_synchronously
       Navigator.pop(context);
     } catch (e) {
-      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('فشل في إرسال البلاغ: ${e.toString()}'),
-          // ignore: use_build_context_synchronously
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -177,233 +176,31 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              GestureDetector(
-                onTap: _chooseImageSource,
-                child: Container(
-                  height: 200,
-                  decoration: BoxDecoration(
-                    color: theme.cardColor,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: theme.primaryColor,
-                      width: 2,
-                    ),
-                  ),
-                  child: _selectedImage == null
-                      ? Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.camera_alt,
-                              size: 50,
-                              color: theme.primaryColor,
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              'إضافة صورة للمشكلة',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: theme.primaryColor,
-                              ),
-                            ),
-                          ],
-                        )
-                      : Stack(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Image.file(
-                                _selectedImage!,
-                                width: double.infinity,
-                                height: double.infinity,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            Positioned(
-                              top: 8,
-                              right: 8,
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    _selectedImage = null;
-                                  });
-                                },
-                                child: Container(
-                                  decoration: const BoxDecoration(
-                                    color: Colors.black54,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Padding(
-                                    padding: EdgeInsets.all(5),
-                                    child: Icon(
-                                      Icons.close,
-                                      color: Colors.white,
-                                      size: 20,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                ),
+              ImagePickerCard(
+                selectedImage: _selectedImage,
+                onChooseImage: _chooseImageSource,
+                onRemoveImage: () => setState(() => _selectedImage = null),
               ),
               const SizedBox(height: 25),
-              const Text(
-                'نوع البلاغ',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Container(
-                decoration: BoxDecoration(
-                  color: theme.cardColor,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      // ignore: deprecated_member_use
-                      color: Colors.grey.withOpacity(0.2),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: DropdownButtonFormField<String>(
-                  value: _selectedType,
-                  items: _emergencyTypes
-                      .map(
-                        (type) => DropdownMenuItem(
-                          value: type,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: Text(
-                              type,
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                          ),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (value) => setState(() => _selectedType = value!),
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 15),
-                  ),
-                  icon: Icon(
-                    Icons.arrow_drop_down,
-                    color: theme.primaryColor,
-                  ),
-                  dropdownColor: theme.cardColor,
-                  borderRadius: BorderRadius.circular(10),
-                ),
+              EmergencyTypeDropdown(
+                selectedType: _selectedType,
+                emergencyTypes: _emergencyTypes,
+                onChanged: (value) => setState(() => _selectedType = value!),
               ),
               const SizedBox(height: 25),
-              Text(
-                'وصف المشكلة',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: theme.textTheme.bodyLarge!.color,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Container(
-                decoration: BoxDecoration(
-                  color: theme.cardColor,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      // ignore: deprecated_member_use
-                      color: Colors.black.withOpacity(0.1),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: TextFormField(
-                  controller: _descriptionController,
-                  maxLines: 5,
-                  decoration: const InputDecoration(
-                    hintText: 'أدخل وصفًا تفصيليًا للمشكلة...',
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.all(15),
-                  ),
-                  validator: (value) =>
-                      value!.isEmpty ? 'الرجاء إدخال وصف المشكلة' : null,
-                  style: theme.textTheme.bodyLarge,
-                ),
+              DescriptionTextField(
+                controller: _descriptionController,
               ),
               const SizedBox(height: 25),
-              Text(
-                'الموقع',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: theme.textTheme.bodyLarge!.color,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Container(
-                decoration: BoxDecoration(
-                  color: theme.cardColor,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      // ignore: deprecated_member_use
-                      color: Colors.black.withOpacity(0.1),
-                      spreadRadius: 3,
-                      blurRadius: 5,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: TextFormField(
-                  controller: _locationController,
-                  readOnly: true,
-                  decoration: InputDecoration(
-                    hintText: 'اضغط على الأيقونة لاستخدام الموقع الحالي',
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.all(15),
-                    suffixIcon: IconButton(
-                      icon: _isLoading
-                          ? const CircularProgressIndicator()
-                          : Icon(
-                              Icons.my_location,
-                              color: theme.primaryColor,
-                            ),
-                      onPressed: _isLoading ? null : _getCurrentLocation,
-                    ),
-                  ),
-                  validator: (value) =>
-                      value!.isEmpty ? 'الرجاء تحديد الموقع' : null,
-                  style: theme.textTheme.bodyLarge,
-                ),
+              LocationTextField(
+                controller: _locationController,
+                isLoading: _isLoading,
+                onGetLocation: _getCurrentLocation,
               ),
               const SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: _isLoading ? null : _submitReport,
-                style: theme.elevatedButtonTheme.style,
-                child: _isLoading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        ),
-                      )
-                    : const Text(
-                        'إرسال البلاغ',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+              SubmitButton(
+                isLoading: _isLoading,
+                onSubmit: _submitReport,
               ),
             ],
           ),

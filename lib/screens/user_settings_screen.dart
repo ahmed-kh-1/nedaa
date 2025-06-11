@@ -1,11 +1,12 @@
-import 'package:call/screens/change_password_screen.dart'
-    show ChangePasswordScreen;
-import 'package:call/screens/edit_profile_screen.dart' show EditProfileScreen;
-import 'package:call/screens/privacy_settings_screen.dart'
-    show PrivacySettingsScreen;
-import 'package:call/settings/theme_notifier.dart' show ThemeNotifier;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:call/screens/change_password_screen.dart';
+import 'package:call/screens/edit_profile_screen.dart';
+import 'package:call/screens/privacy_settings_screen.dart';
+import 'package:call/settings/theme_notifier.dart';
+import 'package:call/widgets/settings_card.dart';
+import 'package:call/widgets/setting_item.dart';
+import 'package:call/widgets/theme_setting_item.dart';
 
 class UserSettingsScreen extends StatelessWidget {
   const UserSettingsScreen({super.key});
@@ -27,100 +28,45 @@ class UserSettingsScreen extends StatelessWidget {
           fontWeight: FontWeight.bold,
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+      body: const SingleChildScrollView(
+        padding: EdgeInsets.all(16),
         child: Column(
           children: [
-            const SizedBox(height: 20),
-            _buildSettingCard(
-              'معلومات الحساب',
-              [
-                _buildSettingItem(
-                  context,
-                  Icons.person,
-                  'تعديل الملف الشخصي',
-                  const EditProfileScreen(),
+            SizedBox(height: 20),
+            SettingsCard(
+              title: 'معلومات الحساب',
+              items: [
+                SettingItem(
+                  icon: Icons.person,
+                  title: 'تعديل الملف الشخصي',
+                  destination: EditProfileScreen(),
                 ),
               ],
             ),
-            const SizedBox(height: 20),
-            _buildSettingCard(
-              'الأمان',
-              [
-                _buildSettingItem(
-                  context,
-                  Icons.lock,
-                  'تغيير كلمة المرور',
-                  const ChangePasswordScreen(),
+            SizedBox(height: 20),
+            SettingsCard(
+              title: 'الأمان',
+              items: [
+                SettingItem(
+                  icon: Icons.lock,
+                  title: 'تغيير كلمة المرور',
+                  destination: ChangePasswordScreen(),
                 ),
-                _buildSettingItem(
-                  context,
-                  Icons.security,
-                  'الأمان والخصوصية',
-                  const PrivacySettingsScreen(),
+                SettingItem(
+                  icon: Icons.security,
+                  title: 'الأمان والخصوصية',
+                  destination: PrivacySettingsScreen(),
                 ),
               ],
             ),
-            const SizedBox(height: 20),
-            _buildSettingCard(
-              'المظهر',
-              [
-                SwitchListTile(
-                  title: const Text('الوضع المظلم'),
-                  value: isDark,
-                  onChanged: (value) => themeNotifier.toggleTheme(),
-                  secondary: const Icon(Icons.dark_mode),
-                ),
-              ],
+            SizedBox(height: 20),
+            SettingsCard(
+              title: 'المظهر',
+              items: [ThemeSettingItem()],
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildSettingCard(String title, List<Widget> items) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue,
-                ),
-              ),
-            ),
-            const Divider(height: 1),
-            Column(children: items),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSettingItem(
-      BuildContext context, IconData icon, String title, Widget screen) {
-    return ListTile(
-      leading: Icon(icon, color: Colors.blue),
-      title: Text(title),
-      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => screen),
-        );
-      },
     );
   }
 }
