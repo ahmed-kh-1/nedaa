@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 
-// الشاشات
+// Screens
+import 'package:call/screens/login_screen.dart';
 import 'package:call/screens/create_post_page.dart';
+import 'package:call/screens/splash_screen.dart';
 import 'package:call/screens/home_screen.dart';
 
-// إدارة الثيم
+// Theme management
 import 'package:call/settings/theme_notifier.dart';
 import 'package:call/theme/app_themes.dart';
 
@@ -17,7 +19,7 @@ void main() async {
   runApp(
     EasyLocalization(
       supportedLocales: const [Locale('ar')],
-      path: 'assets/lang', // مسار ملفات الترجمة
+      path: 'assets/lang',
       fallbackLocale: const Locale('ar'),
       child: ChangeNotifierProvider(
         create: (_) => ThemeNotifier(),
@@ -32,27 +34,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // استدعاء حالة الوضع الليلي من ThemeNotifier
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'نداء',
-
-      // الثيمات المخصصة
       theme: AppTheme.lightTheme(),
       darkTheme: AppTheme.darkTheme(),
       themeMode: themeNotifier.isDark ? ThemeMode.dark : ThemeMode.light,
-
-      // الشاشة الرئيسية
-      home: const HomeScreen(),
-
-      // التوجيه بين الصفحات
+      initialRoute: '/',
       routes: {
+        '/': (context) => const SplashScreen(),
+        '/login': (context) => const LoginScreen(),
+        '/home': (context) => const HomeScreen(),
         '/create-post': (context) => const CreatePostScreen(),
       },
-
-      // إعدادات الترجمة
       locale: context.locale,
       supportedLocales: context.supportedLocales,
       localizationsDelegates: context.localizationDelegates,
