@@ -1,30 +1,34 @@
+import 'package:call/providers/auth_provider.dart';
+import 'package:call/screens/auth/sign_in_screen.dart';
+import 'package:call/screens/auth/sign_up_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 // Screens
-import 'package:call/screens/login_screen.dart';
 import 'package:call/screens/create_post_page.dart';
-import 'package:call/screens/splash_screen.dart';
 import 'package:call/screens/home_screen.dart';
 
 // Theme management
 import 'package:call/settings/theme_notifier.dart';
 import 'package:call/theme/app_themes.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await EasyLocalization.ensureInitialized();
+
+  await Supabase.initialize(
+    url: 'https://iwqhhnnbdlzzjsboyufq.supabase.co',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml3cWhobm5iZGx6empzYm95dWZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI1MjE0MTgsImV4cCI6MjA2ODA5NzQxOH0.ZSjjCaKKGB0XLFPDo6XGD9Yp-TSV4bY5dyOuzJCGQvA',
+  );
 
   runApp(
-    EasyLocalization(
-      supportedLocales: const [Locale('ar')],
-      path: 'assets/lang',
-      fallbackLocale: const Locale('ar'),
-      child: ChangeNotifierProvider(
-        create: (_) => ThemeNotifier(),
-        child: const MyApp(),
-      ),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeNotifier()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+      ],
+      child: const MyApp(),
     ),
   );
 }
@@ -44,14 +48,13 @@ class MyApp extends StatelessWidget {
       themeMode: themeNotifier.isDark ? ThemeMode.dark : ThemeMode.light,
       initialRoute: '/',
       routes: {
-        '/': (context) => const SplashScreen(),
-        '/login': (context) => const LoginScreen(),
+        '/': (context) => const SignInScreen(),
+        '/signin': (context) => const SignInScreen(),
+        '/signup': (context) => const SignupScreen(),
         '/home': (context) => const HomeScreen(),
         '/create-post': (context) => const CreatePostScreen(),
       },
-      locale: context.locale,
-      supportedLocales: context.supportedLocales,
-      localizationsDelegates: context.localizationDelegates,
+    
     );
   }
 }

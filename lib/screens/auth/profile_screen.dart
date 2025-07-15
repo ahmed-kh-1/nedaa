@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'reports_screen.dart';
-import 'saved_screen.dart';
-import 'user_settings_screen.dart';
+import '../reports_screen.dart';
+import '../saved_screen.dart';
+import '../user_settings_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -17,7 +17,7 @@ class ProfileScreen extends StatelessWidget {
               radius: 50,
               backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=8'),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 16), 
             const Text(
               ' Ghina Alhosni',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),

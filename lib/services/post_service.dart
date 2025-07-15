@@ -1,22 +1,8 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import '../models/post_model.dart';
 
 class PostService {
   Future<List<PostModel>> fetchPosts() async {
-    try {
-      final response =
-          await http.get(Uri.parse('https://api.example.com/posts'));
-
-      if (response.statusCode == 200) {
-        List<dynamic> data = jsonDecode(response.body);
-        return data.map((json) => PostModel.fromJson(json)).toList();
-      } else {
-        return _getDemoPosts();
-      }
-    } catch (e) {
-      return _getDemoPosts();
-    }
+    return _getDemoPosts();
   }
 
   List<PostModel> _getDemoPosts() {

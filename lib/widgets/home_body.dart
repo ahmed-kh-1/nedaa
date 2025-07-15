@@ -1,7 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:call/screens/ngos_screen.dart' show NGOsScreen;
-import 'package:call/screens/profile_screen.dart' show ProfileScreen;
+import 'package:call/screens/auth/profile_screen.dart' show ProfileScreen;
 import 'package:flutter/material.dart';
 import 'package:call/widgets/post_card.dart';
 import 'package:call/widgets/adoption_bottom_sheet.dart';

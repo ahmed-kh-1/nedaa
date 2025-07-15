@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:call/screens/change_password_screen.dart';
+import 'package:call/screens/auth/change_password_screen.dart';
 import 'package:call/screens/edit_profile_screen.dart';
 import 'package:call/screens/privacy_settings_screen.dart';
 import 'package:call/settings/theme_notifier.dart';
