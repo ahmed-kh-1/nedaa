@@ -28,15 +28,28 @@ class _SignupScreenState extends State<SignupScreen> {
           name: nameController.text,
           accountType: userType == UserType.user ? "user" : "association");
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("تم إنشاء الحساب بنجاح")),
-      );
-
-      // Navigator.pushNamed(context , ); // العودة إلى صفحة الدخول
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("تم إنشاء الحساب بنجاح"),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        if (mounted) {
+          Navigator.pushNamed(context, '/home');
+        }
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("فشل التسجيل: $e")),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("فشل التسجيل: $e"),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
     }
   }
 

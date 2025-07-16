@@ -23,13 +23,18 @@ class _SignInScreenState extends State<SignInScreen> {
         password: passwordController.text,
       );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("تم تسجيل الدخول"),
-          backgroundColor: Colors.green,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("تم تسجيل الدخول"),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        if (mounted) {
+          Navigator.pushNamed(context, '/home');
+        }
+      }
 
       // انتقل إلى الشاشة الرئيسية
     } catch (e) {
