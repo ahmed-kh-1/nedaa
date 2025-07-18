@@ -30,7 +30,7 @@ class AccountTypeSelector extends StatelessWidget {
         ),
         Expanded(
           child: RadioListTile<UserType>(
-            title: const Text('جمعية'),
+            title: const Text('منظمة'),
             value: UserType.association,
             groupValue: selected,
             onChanged: onChanged,
@@ -133,7 +133,7 @@ class _SignupScreenState extends State<SignupScreen> {
               children: [
                 // الشعار مع التأثير
                 Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: Colors.white.withOpacity(0.1),

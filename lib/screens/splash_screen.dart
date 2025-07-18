@@ -3,6 +3,7 @@
 
 import 'dart:async';
 import 'dart:math';
+import 'package:call/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
@@ -94,7 +95,12 @@ class _SplashScreenState extends State<SplashScreen>
     // الانتقال لشاشة تسجيل الدخول بعد 5 ثوانٍ
     Timer(const Duration(seconds: 5), () {
       if (mounted) {
-        Navigator.pushReplacementNamed(context, '/login');
+        final auth = Provider.of<AuthProvider>(context, listen: false);
+        if (auth.getSession() != null) {
+          Navigator.pushReplacementNamed(context, '/home');
+        } else {
+          Navigator.pushReplacementNamed(context, '/login');
+        }
       }
     });
   }
