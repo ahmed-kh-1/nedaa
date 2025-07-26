@@ -1,7 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:call/models/post_model.dart' show PostModel;
-import 'package:call/widgets/ngo_card.dart' show NgoCard;
+import 'package:call/widgets/orgnizations/orgnization_card.dart';
 import 'package:call/widgets/report_details_card.dart' show ReportDetailsCard;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart'

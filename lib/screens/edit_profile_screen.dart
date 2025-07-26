@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:call/widgets/account_text_field.dart';
 import 'package:call/widgets/delete_account_button.dart';
 import 'package:call/widgets/delete_account_dialog.dart';
 import 'package:call/widgets/profile_image_picker.dart';
@@ -42,21 +41,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 onImageChanged: () => _changeProfileImage(),
               ),
               const SizedBox(height: 20),
-              AccountTextField(
-                controller: _emailController,
-                label: 'البريد الإلكتروني',
-                icon: Icons.email,
-                keyboardType: TextInputType.emailAddress,
-                validator: _validateEmail,
-              ),
-              const SizedBox(height: 16),
-              AccountTextField(
-                controller: _phoneController,
-                label: 'رقم الجوال',
-                icon: Icons.phone,
-                keyboardType: TextInputType.phone,
-                validator: _validatePhone,
-              ),
+              // AccountTextField(
+              //   controller: _emailController,
+              //   label: 'البريد الإلكتروني',
+              //   icon: Icons.email,
+              //   keyboardType: TextInputType.emailAddress,
+              //   validator: _validateEmail,
+              // ),
+              // const SizedBox(height: 16),
+              // AccountTextField(
+              //   controller: _phoneController,
+              //   label: 'رقم الجوال',
+              //   icon: Icons.phone,
+              //   keyboardType: TextInputType.phone,
+              //   validator: _validatePhone,
+              // ),
               const SizedBox(height: 24),
               SaveButton(onPressed: _saveProfile),
               const SizedBox(height: 20),

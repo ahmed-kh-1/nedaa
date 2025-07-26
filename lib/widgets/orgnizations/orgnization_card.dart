@@ -1,4 +1,3 @@
-import 'package:call/widgets/adoption_dialogs.dart';
 import 'package:flutter/material.dart';
 
 class NgoCard extends StatelessWidget {
@@ -25,7 +24,7 @@ class NgoCard extends StatelessWidget {
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        onTap: () => showAdoptionConfirmation(context, name),
+      //  onTap: () => showAdoptionConfirmation(context, name),
         child: Padding(
           padding: const EdgeInsets.all(15),
           child: Row(

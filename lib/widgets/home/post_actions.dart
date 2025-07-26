@@ -38,8 +38,8 @@ class _PostActionsState extends State<PostActions> {
     return TextButton.icon(
       onPressed: _toggleLike,
       icon: Icon(
-        _isLiked ? Icons.favorite : Icons.favorite_border,
-        color: _isLiked ? Colors.red : Colors.grey,
+        _isLiked ? Icons.arrow_circle_up_rounded : Icons.arrow_circle_up,
+        color: _isLiked ? Theme.of(context).primaryColor : Colors.grey,
         size: 30,
       ),
       label: Text('($_likeCount)'),

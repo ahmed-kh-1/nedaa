@@ -8,7 +8,7 @@ class OrganizationModel {
   final String location;
   final String workingHours;
   final String ownerId;
-
+  final String specialization;
   OrganizationModel({
     required this.id,
     required this.name,
@@ -19,6 +19,7 @@ class OrganizationModel {
     required this.location,
     required this.workingHours,
     required this.ownerId,
+    required this.specialization,
   });
 
   factory OrganizationModel.fromMap(Map<String, dynamic> map) {
@@ -32,6 +33,7 @@ class OrganizationModel {
       location: map['location'],
       workingHours: map['working_hours'],
       ownerId: map['owner_id'],
+      specialization: map['specialization'],
     );
   }
 
@@ -45,6 +47,7 @@ class OrganizationModel {
       'location': location,
       'working_hours': workingHours,
       'owner_id': ownerId,
+      'specialization': specialization,
     };
   }
 
@@ -58,6 +61,7 @@ class OrganizationModel {
     String? location,
     String? workingHours,
     String? ownerId,
+    String? specialization,
   }) {
     return OrganizationModel(
       id: id ?? this.id,
@@ -69,6 +73,7 @@ class OrganizationModel {
       location: location ?? this.location,
       workingHours: workingHours ?? this.workingHours,
       ownerId: ownerId ?? this.ownerId,
+      specialization: specialization ?? this.specialization,
     );
   }
 }

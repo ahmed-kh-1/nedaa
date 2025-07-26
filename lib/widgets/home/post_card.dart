@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:call/models/post_model.dart';
-import 'package:call/widgets/user_info_section.dart';
-import 'package:call/widgets/post_actions.dart';
+import 'package:call/widgets/home/post_user_info_section.dart';
+import 'package:call/widgets/home/post_actions.dart';
 
 class PostCard extends StatelessWidget {
   final PostModel post;
-  final VoidCallback? onTap;
+  final VoidCallback onTap;
 
   const PostCard({
     super.key,
     required this.post,
-    this.onTap,
+    required this.onTap,
   });
 
   @override
@@ -24,16 +24,11 @@ class PostCard extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.only(
-              top: 30,
-              left: 16,
-              right: 16,
-              bottom: 16,
-            ),
+            padding: const EdgeInsets.all(8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                UserInfoSection(post: post),
+                PostUserInfoSection(post: post),
                 const SizedBox(height: 16),
                 _buildPostTitle(),
                 const SizedBox(height: 8),

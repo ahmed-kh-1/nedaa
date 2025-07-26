@@ -11,6 +11,66 @@ class AddOrganizationScreen extends StatefulWidget {
 }
 
 class _AddOrganizationScreenState extends State<AddOrganizationScreen> {
+  TimeOfDay? _openTime;
+  TimeOfDay? _closeTime;
+
+  // Store working hours as a formatted string, e.g. "08:00 - 17:00"
+  String get workingHoursString {
+    if (_openTime == null || _closeTime == null) return '';
+    return '${_openTime!.format(context)} - ${_closeTime!.format(context)}';
+  }
+
+
+
+  Widget _buildWorkingHoursPicker(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Expanded(
+            child: OutlinedButton(
+              onPressed: () async {
+                final open = await showTimePicker(
+                  context: context,
+                  initialTime: _openTime ?? TimeOfDay(hour: 8, minute: 0),
+                  helpText: 'اختر وقت البداية',
+                  confirmText: 'تم',
+                  cancelText: 'إلغاء',
+                );
+                if (open != null) {
+                  setState(() => _openTime = open);
+                }
+              },
+              child: Text(_openTime != null
+                  ? 'من: ${_openTime!.format(context)}'
+                  : 'وقت البداية'),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: OutlinedButton(
+              onPressed: () async {
+                final close = await showTimePicker(
+                  context: context,
+                  initialTime: _closeTime ?? TimeOfDay(hour: 17, minute: 0),
+                  helpText: 'اختر وقت النهاية',
+                  confirmText: 'تم',
+                  cancelText: 'إلغاء',
+                );
+                if (close != null) {
+                  setState(() => _closeTime = close);
+                }
+              },
+              child: Text(_closeTime != null
+                  ? 'إلى: ${_closeTime!.format(context)}'
+                  : 'وقت النهاية'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _nameController = TextEditingController();
@@ -19,8 +79,8 @@ class _AddOrganizationScreenState extends State<AddOrganizationScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
-  final TextEditingController _workingHoursController = TextEditingController();
 
+  
   bool _isLoading = false;
 
   void _submitForm() async {
@@ -36,8 +96,9 @@ class _AddOrganizationScreenState extends State<AddOrganizationScreen> {
       phone: _phoneController.text.trim(),
       email: _emailController.text.trim(),
       location: _locationController.text.trim(),
-      workingHours: _workingHoursController.text.trim(),
+      workingHours: workingHoursString,
       ownerId: '', // will be added in service
+      specialization: "todo",
     );
 
     try {
@@ -73,7 +134,7 @@ class _AddOrganizationScreenState extends State<AddOrganizationScreen> {
               _buildTextField(_emailController, 'البريد الإلكتروني',
                   keyboardType: TextInputType.emailAddress),
               _buildTextField(_locationController, 'الموقع الجغرافي'),
-              _buildTextField(_workingHoursController, 'توقيت الدوام'),
+              _buildWorkingHoursPicker(context),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _isLoading ? null : _submitForm,

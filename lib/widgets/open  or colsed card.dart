@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'info_row.dart';
+import 'package:call/models/organization_model.dart';
 
-class NGOCard extends StatelessWidget {
-  final Map<String, dynamic> ngo;
+class OrgnizationsCard extends StatelessWidget {
+  final OrganizationModel organization;
   final int index;
   final VoidCallback onTap;
 
-  const NGOCard({
+  const OrgnizationsCard({
     super.key,
-    required this.ngo,
+    required this.organization,
     required this.index,
     required this.onTap,
   });
@@ -30,7 +31,6 @@ class NGOCard extends StatelessWidget {
               _buildHeader(),
               const SizedBox(height: 12),
               _buildInfoSection(),
-              if (ngo['isAvailable']) _buildAvailabilityBadge(),
             ],
           ),
         ),
@@ -59,13 +59,13 @@ class NGOCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                ngo['name'],
+                organization.name,
                 style:
                     const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 4),
               Text(
-                ngo['specialization'],
+                organization.specialization,
                 style: TextStyle(fontSize: 14, color: Colors.grey[600]),
               ),
             ],
@@ -80,38 +80,14 @@ class NGOCard extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         InfoRow(
-          icon: Icons.star,
-          text: ngo['rating'].toStringAsFixed(1),
-          iconColor: Colors.amber,
-        ),
-        InfoRow(
           icon: Icons.location_on,
-          text: '${ngo['distance'].toStringAsFixed(1)} كم',
+          text: organization.location,
           iconColor: Colors.blue,
         ),
         InfoRow(
           icon: Icons.access_time,
-          text: ngo['isAvailable'] ? 'مفتوح الآن' : 'مغلق',
+          text: 'مفتوح الآن',
           iconColor: Colors.green,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildAvailabilityBadge() {
-    return Column(
-      children: [
-        const SizedBox(height: 12),
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-          decoration: BoxDecoration(
-            color: Colors.red.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: const Text(
-            'متاحة للاستجابة الفورية',
-            style: TextStyle(color: Colors.red),
-          ),
         ),
       ],
     );

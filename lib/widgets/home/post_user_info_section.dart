@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:call/models/post_model.dart';
 
-class UserInfoSection extends StatelessWidget {
+class PostUserInfoSection extends StatelessWidget {
   final PostModel post;
 
-  const UserInfoSection({super.key, required this.post});
+  const PostUserInfoSection({super.key, required this.post});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         const CircleAvatar(
-          radius: 50,
+          radius: 22,
           backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=8'),
         ),
         const SizedBox(width: 12),

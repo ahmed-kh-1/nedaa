@@ -1,24 +1,23 @@
+import 'package:call/models/organization_model.dart';
 import 'package:call/widgets/detail_item.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class NGODetailsBottomSheet {
-  static void show(BuildContext context, String name, String phone) {
+class OrganizationDetailsBottomSheet {
+  static void show(BuildContext context, OrganizationModel organization) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) => _NGOBottomSheetContent(name: name, phone: phone),
+      builder: (context) => _NGOBottomSheetContent(organization: organization),
     );
   }
 }
 
 class _NGOBottomSheetContent extends StatelessWidget {
-  final String name;
-  final String phone;
+  final OrganizationModel organization;
 
   const _NGOBottomSheetContent({
-    required this.name,
-    required this.phone,
+    required this.organization,
   });
 
   @override
@@ -31,19 +30,18 @@ class _NGOBottomSheetContent extends StatelessWidget {
         children: [
           _buildHandleIndicator(),
           Text(
-            name,
+            organization.name,
             style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'متخصصة في تقديم المساعدات الإنسانية وحالات الطوارئ',
+          Text(
+            organization.shortDescription,
             style: TextStyle(color: Colors.grey),
           ),
           const Divider(height: 32),
-          DetailItem(icon: Icons.phone, text: phone),
-          const DetailItem(icon: Icons.email, text: 'info@example.com'),
-          const DetailItem(icon: Icons.location_on, text: 'دمشق، سوريا'),
-          const DetailItem(icon: Icons.access_time, text: 'مفتوح 24/7'),
+          DetailItem(icon: Icons.phone, text: organization.phone),
+          DetailItem(icon: Icons.location_on, text: organization.location),
+          DetailItem(icon: Icons.access_time, text: organization.workingHours),
           const SizedBox(height: 24),
           _buildDescription(),
           const Spacer(),
@@ -68,16 +66,16 @@ class _NGOBottomSheetContent extends StatelessWidget {
   }
 
   Widget _buildDescription() {
-    return const Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'نبذة عن الجمعية:',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Text(
-          'جمعية خيرية مسجلة رسمياً تقدم المساعدات الإنسانية في حالات الكوارث والطوارئ، لديها فرق استجابة سريعة ومراكز إيواء في مختلف المناطق.',
+          organization.generalDescription,
         ),
       ],
     );
@@ -89,7 +87,7 @@ class _NGOBottomSheetContent extends StatelessWidget {
       child: ElevatedButton.icon(
         icon: const Icon(Icons.phone),
         label: const Text('الاتصال الآن'),
-        onPressed: () => _makePhoneCall(context, phone),
+        onPressed: () => _makePhoneCall(context, organization.phone),
       ),
     );
   }

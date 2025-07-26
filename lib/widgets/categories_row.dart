@@ -12,7 +12,7 @@ class CategoriesRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const categories = ['الكل', 'الإغاثة', 'الصحة', 'التعليم', 'البيئة'];
+    const categories = ['الكل', 'الاغاثة', 'الصحة', 'التعليم', 'البيئة'];
 
     return SizedBox(
       height: 60,
