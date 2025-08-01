@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:call/screens/auth/change_password_screen.dart';
-import 'package:call/screens/edit_profile_screen.dart';
-import 'package:call/screens/privacy_settings_screen.dart';
+import 'package:call/screens/settings/edit_profile_screen.dart';
+import 'package:call/screens/settings/privacy_settings_screen.dart';
 import 'package:call/settings/theme_notifier.dart';
-import 'package:call/widgets/settings_card.dart';
-import 'package:call/widgets/setting_item.dart';
-import 'package:call/widgets/theme_setting_item.dart';
+import 'package:call/widgets/settings/settings_card.dart';
+import 'package:call/widgets/settings/setting_item.dart';
+import 'package:call/widgets/settings/theme_setting_item.dart';
 
 class UserSettingsScreen extends StatelessWidget {
   const UserSettingsScreen({super.key});

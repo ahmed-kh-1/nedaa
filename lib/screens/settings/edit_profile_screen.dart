@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:call/widgets/delete_account_button.dart';
-import 'package:call/widgets/delete_account_dialog.dart';
-import 'package:call/widgets/profile_image_picker.dart';
-import 'package:call/widgets/save_button.dart';
+import 'package:call/widgets/settings/delete_account_button.dart';
+import 'package:call/widgets/settings/delete_account_dialog.dart';
+import 'package:call/widgets/settings/save_button.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -15,7 +14,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController(text: 'user@example.com');
   final _phoneController = TextEditingController(text: '+966501234567');
-  String? _profileImage;
 
   @override
   Widget build(BuildContext context) {
@@ -36,11 +34,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           key: _formKey,
           child: Column(
             children: [
-              ProfileImagePicker(
-                imageUrl: _profileImage,
-                onImageChanged: () => _changeProfileImage(),
-              ),
-              const SizedBox(height: 20),
               // AccountTextField(
               //   controller: _emailController,
               //   label: 'البريد الإلكتروني',
@@ -79,13 +72,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (value == null || value.isEmpty) return 'الرجاء إدخال رقم الجوال';
     if (value.length < 10) return 'رقم الجوال يجب أن يكون 10 أرقام على الأقل';
     return null;
-  }
-
-  void _changeProfileImage() {
-    setState(() => _profileImage = 'https://i.pravatar.cc/150?img=9');
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('تم تغيير صورة الملف الشخصي')),
-    );
   }
 
   void _saveProfile() {

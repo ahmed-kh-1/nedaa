@@ -1,5 +1,5 @@
-import 'package:call/widgets/password_button.dart';
-import 'package:call/widgets/password_form_field.dart';
+import 'package:call/widgets/settings/password_button.dart';
+import 'package:call/widgets/settings/password_form_field.dart';
 import 'package:flutter/material.dart';
 
 class ChangePasswordScreen extends StatefulWidget {

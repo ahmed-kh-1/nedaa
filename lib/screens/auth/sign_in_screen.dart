@@ -48,7 +48,7 @@ class _SignInScreenState extends State<SignInScreen> {
           ),
         ),
       );
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.pushReplacementNamed(context, '/main-tab');
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

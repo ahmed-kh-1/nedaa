@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import '../reports_screen.dart';
-import '../saved_screen.dart';
-import '../user_settings_screen.dart';
+import '../posts/my_posts_screen.dart';
+import 'user_settings_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -17,7 +16,7 @@ class ProfileScreen extends StatelessWidget {
               radius: 50,
               backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=8'),
             ),
-            const SizedBox(height: 16), 
+            const SizedBox(height: 16),
             const Text(
               ' Ghina Alhosni',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
@@ -29,16 +28,7 @@ class ProfileScreen extends StatelessWidget {
               title: 'بلاغاتي السابقة',
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ReportsScreen()),
-              ),
-            ),
-            _buildProfileItem(
-              context,
-              icon: Icons.favorite,
-              title: 'المحفوظات',
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const SavedScreen()),
+                MaterialPageRoute(builder: (context) => const MyPostsScreen()),
               ),
             ),
             _buildProfileItem(

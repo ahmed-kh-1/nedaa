@@ -1,3 +1,7 @@
+import 'package:call/providers/call_provider.dart';
+import 'package:call/providers/comment_provider.dart';
+import 'package:call/providers/post_provider.dart';
+import 'package:call/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
@@ -7,12 +11,12 @@ import 'package:call/providers/auth_provider.dart';
 import 'package:call/providers/organization_provider.dart';
 import 'package:call/screens/auth/sign_in_screen.dart';
 import 'package:call/screens/auth/sign_up_screen.dart';
-import 'package:call/screens/create_post_page.dart';
+import 'package:call/screens/posts/create_post_page.dart';
 import 'package:call/screens/home/home_screen.dart';
 import 'package:call/screens/home/main_tab_screen.dart';
 import 'package:call/screens/organizations/add_orgnization_screen.dart';
 import 'package:call/screens/organizations/orgnizations_screen.dart';
-import 'package:call/screens/splash_screen.dart';
+import 'package:call/screens/splash/splash_screen.dart';
 import 'package:call/services/supabase_service.dart';
 import 'package:call/settings/theme_notifier.dart';
 import 'package:call/theme/app_themes.dart';
@@ -30,7 +34,12 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeNotifier()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => OrganizationProvider()),
+        ChangeNotifierProvider(
+            create: (_) => OrganizationProvider()..fetchOrganizations()),
+        ChangeNotifierProvider(create: (_) => PostProvider()..fetchPosts()),
+        ChangeNotifierProvider(create: (_) => CommentProvider()),
+        ChangeNotifierProvider(create: (_) => CallProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
       ],
       child: const MyApp(),
     ),

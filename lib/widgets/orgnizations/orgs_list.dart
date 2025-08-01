@@ -1,5 +1,5 @@
 import 'package:call/models/organization_model.dart';
-import 'package:call/widgets/open%20%20or%20colsed%20card.dart';
+import 'package:call/widgets/orgnizations/open%20_or_colsed_card.dart';
 import 'package:flutter/material.dart';
 
 class OrganizationsList extends StatelessWidget {

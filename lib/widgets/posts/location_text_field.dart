@@ -57,7 +57,6 @@ class LocationTextField extends StatelessWidget {
                 onPressed: isLoading ? null : onGetLocation,
               ),
             ),
-            validator: (value) => value!.isEmpty ? 'الرجاء تحديد الموقع' : null,
             style: theme.textTheme.bodyLarge,
           ),
         ),

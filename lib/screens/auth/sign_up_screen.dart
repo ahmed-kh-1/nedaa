@@ -90,7 +90,7 @@ class _SignupScreenState extends State<SignupScreen> {
           ),
         ),
       );
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.pushReplacementNamed(context, '/main-tab');
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

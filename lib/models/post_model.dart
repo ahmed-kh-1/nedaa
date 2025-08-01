@@ -1,72 +1,74 @@
 class PostModel {
-  final String userName;
-  final String timeAgo;
-  final String title;
-  final String description;
-  final int likes;
-  final int comments;
-  List<String>? _savedComments;
+  final String postId;
+  final String posterName;
+  final String posterId;
+  final String postText;
+  final String postType;
   final bool isAdopted;
-  final String? adoptedBy;
+  final String? imageUrl;
+  final String locationUrl;
+  final DateTime createdAt;
 
   PostModel({
-    required this.userName,
-    required this.timeAgo,
-    required this.title,
-    required this.description,
-    required this.likes,
-    required this.comments,
-    List<String>? savedComments,
-    this.isAdopted = false,
-    this.adoptedBy,
-  }) : _savedComments = savedComments;
+    required this.postId,
+    required this.posterName,
+    required this.posterId,
+    required this.postText,
+    required this.postType,
+    required this.isAdopted,
+    this.imageUrl,
+    required this.locationUrl,
+    required this.createdAt,
+  });
 
-  factory PostModel.fromJson(Map<String, dynamic> json) {
+  factory PostModel.fromMap(Map<String, dynamic> map) {
     return PostModel(
-      userName: json['userName'] ?? 'مستخدم مجهول',
-      timeAgo: json['timeAgo'] ?? 'منذ فترة',
-      title: json['title'] ?? 'بدون عنوان',
-      description: json['description'] ?? 'لا يوجد وصف',
-      likes: json['likes'] ?? 0,
-      comments: json['comments'] ?? 0,
-      savedComments: json['savedComments'] != null
-          ? List<String>.from(json['savedComments'])
-          : null,
-      isAdopted: json['isAdopted'] ?? false,
-      adoptedBy: json['adoptedBy'],
+      postId: map['id'] ?? '',
+      posterName: map['poster_name'] ?? '',
+      posterId: map['poster_id'] ?? '',
+      postText: map['post_text'] ?? '',
+      postType: map['post_type'] ?? '',
+      isAdopted: map['is_adopted'] ?? false,
+      imageUrl: map['image_url'],
+      locationUrl: map['location_url'] ?? '',
+      createdAt: DateTime.tryParse(map['created_at'] ?? '') ?? DateTime.now(),
     );
   }
 
-  List<String>? get savedComments => _savedComments;
-
-  bool get isLiked => false;
-
-  set savedComments(List<String>? comments) {
-    _savedComments = comments;
+  Map<String, dynamic> toMap() {
+    return {
+      'poster_name': posterName,
+      'poster_id': posterId,
+      'post_text': postText,
+      'post_type': postType,
+      'is_adopted': isAdopted,
+      'image_url': imageUrl,
+      'location_url': locationUrl,
+      'created_at': createdAt.toIso8601String(),
+    };
   }
 
   PostModel copyWith({
-    String? userName,
-    String? timeAgo,
-    String? title,
-    String? description,
-    int? likes,
-    int? comments,
-    List<String>? savedComments,
+    String? postId,
+    String? posterName,
+    String? posterId,
+    String? postText,
+    String? postType,
     bool? isAdopted,
-    String? adoptedBy,
-    required bool isLiked,
+    String? imageUrl,
+    String? locationUrl,
+    DateTime? createdAt,
   }) {
     return PostModel(
-      userName: userName ?? this.userName,
-      timeAgo: timeAgo ?? this.timeAgo,
-      title: title ?? this.title,
-      description: description ?? this.description,
-      likes: likes ?? this.likes,
-      comments: comments ?? this.comments,
-      savedComments: savedComments ?? _savedComments,
+      postId: postId ?? this.postId,
+      posterName: posterName ?? this.posterName,
+      posterId: posterId ?? this.posterId,
+      postText: postText ?? this.postText,
+      postType: postType ?? this.postType,
       isAdopted: isAdopted ?? this.isAdopted,
-      adoptedBy: adoptedBy ?? this.adoptedBy,
+      imageUrl: imageUrl ?? this.imageUrl,
+      locationUrl: locationUrl ?? this.locationUrl,
+      createdAt: createdAt ?? this.createdAt,
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:call/models/organization_model.dart';
 import 'package:call/providers/organization_provider.dart';
-import 'package:call/widgets/categories_row.dart';
+import 'package:call/widgets/orgnizations/categories_row.dart';
 import 'package:call/widgets/orgnizations/orgs_details_bottom_sheet.dart';
 import 'package:call/widgets/orgnizations/orgs_list.dart';
 import 'package:flutter/material.dart';
@@ -14,15 +14,6 @@ class OrganizationsScreen extends StatefulWidget {
 }
 
 class _OrganizationsScreenState extends State<OrganizationsScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // Fetch organizations when the screen loads
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<OrganizationProvider>().fetchOrganizations();
-    });
-  }
-
   String _selectedCategory = 'الكل';
 
   void _showOrganizationDetails(
@@ -32,14 +23,22 @@ class _OrganizationsScreenState extends State<OrganizationsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final organizationProvider = Provider.of<OrganizationProvider>(context);
+    final provider = context.watch<OrganizationProvider>();
+
+    if (provider.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (provider.errorMessage != null) {
+      return Center(child: Text('Error: ${provider.errorMessage}'));
+    }
 
     return Scaffold(
       body: OrgnizationsBody(
         selectedCategory: _selectedCategory,
         onCategorySelected: (category) =>
             setState(() => _selectedCategory = category),
-        organizations: organizationProvider.organizations,
+        organizations: provider.organizations,
         onNGOTapped: (organization) =>
             _showOrganizationDetails(context, organization),
       ),

@@ -1,5 +1,6 @@
 import 'package:call/models/organization_model.dart';
-import 'package:call/widgets/detail_item.dart';
+import 'package:call/screens/calls/OrganizationCallsPage.dart';
+import 'package:call/widgets/orgnizations/detail_item.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -45,6 +46,8 @@ class _NGOBottomSheetContent extends StatelessWidget {
           const SizedBox(height: 24),
           _buildDescription(),
           const Spacer(),
+          _buildViewCallsButton(context),
+          const SizedBox(height: 8),
           _buildCallButton(context),
         ],
       ),
@@ -88,6 +91,27 @@ class _NGOBottomSheetContent extends StatelessWidget {
         icon: const Icon(Icons.phone),
         label: const Text('الاتصال الآن'),
         onPressed: () => _makePhoneCall(context, organization.phone),
+      ),
+    );
+  }
+
+  Widget _buildViewCallsButton(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton.icon(
+        icon: const Icon(Icons.call),
+        label: const Text('عرض المكالمات'),
+        onPressed: () => _navigateToCalls(context),
+      ),
+    );
+  }
+
+  void _navigateToCalls(BuildContext context) {
+    Navigator.pop(context); // Close the bottom sheet first
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => OrganizationCallsPage(organization: organization),
       ),
     );
   }
