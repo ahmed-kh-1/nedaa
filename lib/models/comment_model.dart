@@ -28,7 +28,6 @@ class CommentModel {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
       'post_id': postId,
       'commenter_id': commenterId,
       'commenter_name': commenterName,

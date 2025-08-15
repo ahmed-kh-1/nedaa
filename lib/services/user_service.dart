@@ -5,29 +5,33 @@ import '../models/user_model.dart';
 
 class UserService {
   static const String _userKey = 'current_user';
-  static const String _isLoggedInKey = 'is_logged_in';
 
   Future<void> saveUser(UserModel user) async {
-    debugPrint("saving user: $user");
-    final prefs = await SharedPreferences.getInstance();
-    final userJson = jsonEncode(user.toMap());
-    await prefs.setString(_userKey, userJson);
-    await prefs.setBool(_isLoggedInKey, true);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final userJson = jsonEncode(user.toMap());
+      await prefs.setString(_userKey, userJson);
+      debugPrint("[UserService] ✅ User saved successfully: ${user.email}");
+    } catch (e) {
+      debugPrint("[UserService] ❌ Failed to save user: $e");
+    }
   }
 
   Future<UserModel?> getCurrentUser() async {
-    final prefs = await SharedPreferences.getInstance();
-    final userJson = prefs.getString(_userKey);
-    if (userJson != null) {
-      final userMap = jsonDecode(userJson);
-      return UserModel.fromMap(userMap);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final userJson = prefs.getString(_userKey);
+      if (userJson != null) {
+        final userMap = jsonDecode(userJson);
+        final user = UserModel.fromMap(userMap);
+        debugPrint("[UserService] ✅ User loaded: ${user.email}");
+        return user;
+      }
+      debugPrint("[UserService] ⚠️ No user found in storage.");
+    } catch (e) {
+      debugPrint("[UserService] ❌ Failed to load user: $e");
     }
     return null;
-  }
-
-  Future<bool> isLoggedIn() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_isLoggedInKey) ?? false;
   }
 
   Future<void> updateLastLogin(DateTime lastLogin) async {
@@ -35,13 +39,20 @@ class UserService {
     if (currentUser != null) {
       final updatedUser = currentUser.copyWith(lastLoginAt: lastLogin);
       await saveUser(updatedUser);
+      debugPrint("[UserService] ✅ Last login updated.");
+    } else {
+      debugPrint("[UserService] ⚠️ No user to update last login.");
     }
   }
 
   Future<void> clearUser() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_userKey);
-    await prefs.setBool(_isLoggedInKey, false);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_userKey);
+      debugPrint("[UserService] ✅ User data cleared.");
+    } catch (e) {
+      debugPrint("[UserService] ❌ Failed to clear user data: $e");
+    }
   }
 
   Future<void> updateUserInfo({
@@ -57,6 +68,9 @@ class UserService {
         avatarUrl: avatarUrl,
       );
       await saveUser(updatedUser);
+      debugPrint("[UserService] ✅ User info updated.");
+    } else {
+      debugPrint("[UserService] ⚠️ No user to update info.");
     }
   }
 }

@@ -21,14 +21,18 @@ class UserProvider with ChangeNotifier {
 
   void _setError(String? message) {
     _errorMessage = message;
+    if (message != null) {
+      debugPrint("[UserProvider] ❌ Error: $message");
+    }
     notifyListeners();
   }
 
-  Future<void> loadUser() async {
+  /// Helper for running async methods safely
+  Future<void> _runSafe(Future<void> Function() action) async {
     _setLoading(true);
     _setError(null);
     try {
-      _currentUser = await _userService.getCurrentUser();
+      await action();
     } catch (e) {
       _setError(e.toString());
     } finally {
@@ -36,18 +40,25 @@ class UserProvider with ChangeNotifier {
     }
   }
 
+  Future<void> loadUser() async {
+    await _runSafe(() async {
+      debugPrint("[UserProvider] 📂 Loading user from local storage...");
+      _currentUser = await _userService.getCurrentUser();
+      if (_currentUser != null) {
+        debugPrint("[UserProvider] ✅ User loaded: ${_currentUser!.email}");
+      } else {
+        debugPrint("[UserProvider] ⚠️ No user found.");
+      }
+    });
+  }
+
   Future<void> saveUser(UserModel user) async {
-    _setLoading(true);
-    _setError(null);
-    try {
+    await _runSafe(() async {
+      debugPrint("[UserProvider] 💾 Saving user: ${user.email}");
       await _userService.saveUser(user);
       _currentUser = user;
-      notifyListeners();
-    } catch (e) {
-      _setError(e.toString());
-    } finally {
-      _setLoading(false);
-    }
+      debugPrint("[UserProvider] ✅ User saved successfully.");
+    });
   }
 
   Future<void> updateUserInfo({
@@ -55,62 +66,51 @@ class UserProvider with ChangeNotifier {
     String? phone,
     String? avatarUrl,
   }) async {
-    _setLoading(true);
-    _setError(null);
-    try {
+    await _runSafe(() async {
       if (_currentUser != null) {
-        final updatedUser = _currentUser!.copyWith(
-          fullName: fullName,
-          phone: phone,
-          avatarUrl: avatarUrl,
-        );
+        debugPrint("[UserProvider] ✏️ Updating user info...");
         await _userService.updateUserInfo(
           fullName: fullName,
           phone: phone,
           avatarUrl: avatarUrl,
         );
-        _currentUser = updatedUser;
-        notifyListeners();
+        _currentUser = _currentUser!.copyWith(
+          fullName: fullName,
+          phone: phone,
+          avatarUrl: avatarUrl,
+        );
+        debugPrint("[UserProvider] ✅ User info updated.");
+      } else {
+        debugPrint("[UserProvider] ⚠️ No user to update.");
       }
-    } catch (e) {
-      _setError(e.toString());
-    } finally {
-      _setLoading(false);
-    }
+    });
   }
 
   Future<void> updateLastLogin(DateTime lastLogin) async {
-    _setLoading(true);
-    _setError(null);
-    try {
+    await _runSafe(() async {
       if (_currentUser != null) {
-        final updatedUser = _currentUser!.copyWith(lastLoginAt: lastLogin);
+        debugPrint("[UserProvider] ⏳ Updating last login...");
         await _userService.updateLastLogin(lastLogin);
-        _currentUser = updatedUser;
-        notifyListeners();
+        _currentUser = _currentUser!.copyWith(lastLoginAt: lastLogin);
+        debugPrint("[UserProvider] ✅ Last login updated.");
+      } else {
+        debugPrint("[UserProvider] ⚠️ No user to update last login.");
       }
-    } catch (e) {
-      _setError(e.toString());
-    } finally {
-      _setLoading(false);
-    }
+    });
   }
 
   Future<void> clearUser() async {
-    _setLoading(true);
-    _setError(null);
-    try {
+    await _runSafe(() async {
+      debugPrint("[UserProvider] 🗑 Clearing user data...");
       await _userService.clearUser();
       _currentUser = null;
-      notifyListeners();
-    } catch (e) {
-      _setError(e.toString());
-    } finally {
-      _setLoading(false);
-    }
+      debugPrint("[UserProvider] ✅ User data cleared.");
+    });
   }
 
   bool isLoggedIn() {
-    return _currentUser != null;
+    final loggedIn = _currentUser != null;
+    debugPrint("[UserProvider] 🔍 isLoggedIn: $loggedIn");
+    return loggedIn;
   }
 }

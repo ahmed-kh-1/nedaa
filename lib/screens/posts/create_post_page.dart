@@ -1,4 +1,4 @@
-import 'dart:developer';
+import 'package:call/providers/user_provider.dart';
 import 'package:call/services/location_service.dart';
 import 'package:call/widgets/posts/description_text_field.dart';
 import 'package:call/widgets/posts/emergency_type_dropdown.dart';
@@ -8,7 +8,6 @@ import 'package:call/widgets/posts/create_post_submit_button.dart';
 import 'package:call/models/post_model.dart';
 import 'package:call/providers/post_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
@@ -101,12 +100,27 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     }
 
     final postProvider = Provider.of<PostProvider>(context, listen: false);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
 
-    // Create a new post model
+    // جلب بيانات المستخدم الحالي
+    final currentUser = userProvider.currentUser;
+
+    if (currentUser == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+              'فشل في إرسال البلاغ: لم يتم العثور على بيانات المستخدم'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+      return;
+    }
+
+    // إنشاء البلاغ الجديد باستخدام بيانات المستخدم
     final newPost = PostModel(
       postId: '',
-      posterName: '', // Leave empty as requested
-      posterId: '', // Will be set by the service
+      posterName: currentUser.fullName ?? "مجهول", // من UserProvider
+      posterId: currentUser.id, // من UserProvider
       postText: _descriptionController.text,
       postType: _selectedType == 'حالة طارئة'
           ? 'emergency'
@@ -116,7 +130,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   ? 'accident'
                   : 'health',
       isAdopted: false,
-      imageUrl: null, // Will be updated after image upload
+      imageUrl: null, // سيتم تحديثها بعد رفع الصورة
       locationUrl: _locationController.text,
       createdAt: DateTime.now(),
     );
@@ -132,7 +146,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           ),
         );
 
-        // Clear form
+        // مسح الحقول
         _descriptionController.clear();
         _locationController.clear();
         setState(() {
@@ -140,7 +154,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           _selectedType = 'حالة طارئة';
         });
 
-        // Navigate back
+        // العودة للخلف
         Navigator.pop(context);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

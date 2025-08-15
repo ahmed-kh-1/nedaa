@@ -1,11 +1,12 @@
+import 'package:call/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../models/post_model.dart';
 import '../../models/call_model.dart';
 import '../../models/organization_model.dart';
 import '../../providers/call_provider.dart';
 import '../../providers/organization_provider.dart';
+import '../../providers/user_provider.dart';
 
 class CallsPage extends StatefulWidget {
   final PostModel post;
@@ -31,92 +32,10 @@ class _CallsPageState extends State<CallsPage> {
   }
 
   Future<void> _addCall() async {
-    final orgProvider = Provider.of<OrganizationProvider>(context, listen: false);
-    
-    // Ensure organizations are loaded
-    if (orgProvider.organizations.isEmpty) {
-      await orgProvider.fetchOrganizations();
-    }
-    
-    _showOrganizationSelectionDialog(orgProvider.organizations);
-  }
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    await userProvider.loadUser();
+    final user = userProvider.currentUser;
 
-  void _showOrganizationSelectionDialog(List<OrganizationModel> organizations) {
-    final searchController = TextEditingController();
-    List<OrganizationModel> filteredOrgs = List.from(organizations);
-    
-    showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: const Text('اختر المنظمة'),
-              content: SizedBox(
-                width: double.maxFinite,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextField(
-                      controller: searchController,
-                      decoration: const InputDecoration(
-                        hintText: 'ابحث عن منظمة...',
-                        prefixIcon: Icon(Icons.search),
-                      ),
-                      onChanged: (value) {
-                        setState(() {
-                          if (value.isEmpty) {
-                            filteredOrgs = List.from(organizations);
-                          } else {
-                            filteredOrgs = organizations
-                                .where((org) => org.name
-                                    .toLowerCase()
-                                    .contains(value.toLowerCase()))
-                                .toList();
-                          }
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    Expanded(
-                      child: filteredOrgs.isEmpty
-                          ? const Center(child: Text('لا توجد منظمات'))
-                          : ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: filteredOrgs.length,
-                              itemBuilder: (context, index) {
-                                final org = filteredOrgs[index];
-                                return ListTile(
-                                  title: Text(org.name),
-                                  subtitle: Text(org.shortDescription),
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                    _confirmAddCall(org);
-                                  },
-                                );
-                              },
-                            ),
-                    ),
-                  ],
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('إلغاء'),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-
-  void _confirmAddCall(OrganizationModel organization) async {
-    final supabase = Supabase.instance.client;
-    final user = supabase.auth.currentUser;
-    
     if (user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('يجب تسجيل الدخول لإضافة مكالمة')),
@@ -124,53 +43,148 @@ class _CallsPageState extends State<CallsPage> {
       return;
     }
 
-    // Show confirmation dialog
-    final confirmed = await showDialog<bool>(
+    final orgProvider =
+        Provider.of<OrganizationProvider>(context, listen: false);
+
+    if (orgProvider.organizations.isEmpty) {
+      await orgProvider.fetchOrganizations();
+    }
+
+    _showOrganizationSelectionSheet(orgProvider.organizations, user);
+  }
+
+  void _showOrganizationSelectionSheet(
+      List<OrganizationModel> organizations, UserModel user) {
+    final searchController = TextEditingController();
+
+    showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('تأكيد إضافة مكالمة'),
-        content: Text('هل تريد إضافة مكالمة إلى ${organization.name}؟'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('إلغاء'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('تأكيد'),
-          ),
-        ],
-      ),
+      isScrollControlled: true,
+      builder: (context) {
+        List<OrganizationModel> filteredOrgs = List.from(organizations);
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return DraggableScrollableSheet(
+              expand: false,
+              initialChildSize: 0.6,
+              minChildSize: 0.3,
+              maxChildSize: 0.9,
+              builder: (_, scrollController) {
+                return Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        height: 5,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'اختر المنظمة',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: searchController,
+                        decoration: InputDecoration(
+                          hintText: 'ابحث عن منظمة...',
+                          prefixIcon: const Icon(Icons.search),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          contentPadding:
+                              const EdgeInsets.symmetric(vertical: 10),
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            if (value.isEmpty) {
+                              filteredOrgs = List.from(organizations);
+                            } else {
+                              filteredOrgs = organizations
+                                  .where((org) => org.name
+                                      .toLowerCase()
+                                      .contains(value.toLowerCase()))
+                                  .toList();
+                            }
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      Expanded(
+                        child: filteredOrgs.isEmpty
+                            ? const Center(child: Text('لا توجد منظمات'))
+                            : ListView.builder(
+                                controller: scrollController,
+                                itemCount: filteredOrgs.length,
+                                itemBuilder: (context, index) {
+                                  final org = filteredOrgs[index];
+                                  return Card(
+                                    margin:
+                                        const EdgeInsets.symmetric(vertical: 8),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(12)),
+                                    elevation: 2,
+                                    child: ListTile(
+                                      title: Text(org.name),
+                                      subtitle: Text(org.shortDescription),
+                                      trailing: const Icon(Icons.chevron_right),
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                        _addCallToOrganization(org, user);
+                                      },
+                                    ),
+                                  );
+                                },
+                              ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _addCallToOrganization(
+      OrganizationModel organization, UserModel user) async {
+    final call = CallModel(
+      id: '',
+      postId: widget.post.postId,
+      organizationId: organization.id,
+      callerId: user.id,
+      callerName: user.fullName!,
+      createdAt: DateTime.now(),
     );
 
-    if (confirmed == true) {
-      final call = CallModel(
-        id: '', // Will be generated by Supabase
-        postId: widget.post.postId,
-        organizationId: organization.id,
-        callerId: user.id,
-        callerName: user.userMetadata?['full_name'] ?? 'مستخدم',
-        createdAt: DateTime.now(),
+    final callProvider = Provider.of<CallProvider>(context, listen: false);
+    try {
+      await callProvider.addCall(call);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تم إضافة المكالمة بنجاح')),
       );
-
-      final callProvider = Provider.of<CallProvider>(context, listen: false);
-      try {
-        await callProvider.addCall(call);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('تم إضافة المكالمة بنجاح')),
-        );
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('فشل في إضافة المكالمة: $e')),
-        );
-      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('فشل في إضافة المكالمة: $e')),
+      );
     }
   }
 
   String _formatDateTime(DateTime dateTime) {
     final now = DateTime.now();
     final difference = now.difference(dateTime);
-    
+
     if (difference.inDays > 0) {
       return '${difference.inDays} يوم';
     } else if (difference.inHours > 0) {
@@ -226,11 +240,9 @@ class _CallsPageState extends State<CallsPage> {
                     itemCount: calls.length,
                     itemBuilder: (context, index) {
                       final call = calls[index];
-                      
-                      // Find organization name
+
                       final organization = orgProvider.organizations
-                          .firstWhere(
-                              (org) => org.id == call.organizationId,
+                          .firstWhere((org) => org.id == call.organizationId,
                               orElse: () => OrganizationModel(
                                     id: '',
                                     name: 'منظمة غير معروفة',
@@ -243,7 +255,7 @@ class _CallsPageState extends State<CallsPage> {
                                     ownerId: '',
                                     specialization: '',
                                   ));
-                      
+
                       return Card(
                         margin: const EdgeInsets.symmetric(
                             vertical: 6, horizontal: 8),
@@ -258,7 +270,8 @@ class _CallsPageState extends State<CallsPage> {
                               CircleAvatar(
                                 radius: 18,
                                 backgroundColor: Colors.green.shade300,
-                                child: const Icon(Icons.call, color: Colors.white),
+                                child:
+                                    const Icon(Icons.call, color: Colors.white),
                               ),
                               const SizedBox(width: 12),
                               Expanded(

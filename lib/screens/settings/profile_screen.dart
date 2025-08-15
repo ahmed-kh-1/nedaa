@@ -1,4 +1,6 @@
+import 'package:call/providers/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../posts/my_posts_screen.dart';
 import 'user_settings_screen.dart';
 
@@ -7,21 +9,36 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
+    final user = userProvider.currentUser;
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
           children: [
             const SizedBox(height: 20),
-            const CircleAvatar(
+
+            // Static avatar image
+            CircleAvatar(
               radius: 50,
-              backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=8'),
+              backgroundColor: Colors.grey.shade300,
+              child: const Icon(
+                Icons.person,
+                color: Colors.grey,
+                size: 50,
+              ),
             ),
+
             const SizedBox(height: 16),
-            const Text(
-              ' Ghina Alhosni',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+
+            // Dynamic user name
+            Text(
+              user?.fullName ?? 'مستخدم',
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
+
             const SizedBox(height: 30),
+
             _buildProfileItem(
               context,
               icon: Icons.history,
@@ -63,7 +80,6 @@ class ProfileScreen extends StatelessWidget {
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            // ignore: deprecated_member_use
             color: Colors.blue.withOpacity(0.1),
             shape: BoxShape.circle,
           ),

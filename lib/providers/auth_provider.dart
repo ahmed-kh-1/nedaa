@@ -1,4 +1,3 @@
-// import 'package:call/services/cache_service.dart';
 import 'package:call/models/user_model.dart';
 import 'package:call/services/auth_service.dart';
 import 'package:call/services/user_service.dart';
@@ -12,9 +11,10 @@ class AuthProvider with ChangeNotifier {
     required String email,
     required String password,
     required String name,
-    required String accountType, // 'user' or 'association'
+    required String accountType,
   }) async {
     try {
+      debugPrint("[AuthProvider] 📩 Signing up user...");
       final result = await _authService.signUp(
         email: email,
         password: password,
@@ -22,7 +22,6 @@ class AuthProvider with ChangeNotifier {
         accountType: accountType,
       );
 
-      // Save user data after successful signup
       if (result != null) {
         final supabase = Supabase.instance.client;
         final user = supabase.auth.currentUser;
@@ -32,14 +31,14 @@ class AuthProvider with ChangeNotifier {
             email: user.email ?? '',
             fullName: name,
             createdAt: DateTime.now(),
-            lastLoginAt: DateTime.now(),
           );
           await UserService().saveUser(userModel);
+          debugPrint("[AuthProvider] ✅ Signup successful and user saved.");
         }
       }
-
       return result;
     } catch (e) {
+      debugPrint("[AuthProvider] ❌ Signup failed: $e");
       rethrow;
     }
   }
@@ -49,34 +48,47 @@ class AuthProvider with ChangeNotifier {
     required String password,
   }) async {
     try {
+      debugPrint("[AuthProvider] 📩 Signing in user...");
       final result =
           await _authService.signIn(email: email, password: password);
 
-      // Save user data after successful login
       if (result != null) {
         final supabase = Supabase.instance.client;
         final user = supabase.auth.currentUser;
+
         if (user != null) {
-          // Try to get existing user data first
+          // 🔹 Fetch name from accounts table
+          final accountRes = await supabase
+              .from('accounts')
+              .select('name')
+              .eq('id', user.id)
+              .maybeSingle();
+
+          final accountName = accountRes?['name'] as String?;
+
           final existingUser = await UserService().getCurrentUser();
           final userModel = existingUser?.copyWith(
                 id: user.id,
                 email: user.email ?? '',
+                fullName: accountName, // ✅ now we get name from accounts
                 lastLoginAt: DateTime.now(),
               ) ??
               UserModel(
                 id: user.id,
                 email: user.email ?? '',
-                fullName: user.userMetadata?['full_name'],
+                fullName: accountName,
                 createdAt: DateTime.now(),
                 lastLoginAt: DateTime.now(),
               );
+
           await UserService().saveUser(userModel);
+          debugPrint(
+              "[AuthProvider] ✅ Signin successful and user saved with name: $accountName");
         }
       }
-
       return result;
     } catch (e) {
+      debugPrint("[AuthProvider] ❌ Signin failed: $e");
       rethrow;
     }
   }
@@ -84,10 +96,12 @@ class AuthProvider with ChangeNotifier {
   Future<void> changePassword({
     required String newPassword,
   }) {
+    debugPrint("[AuthProvider] 🔑 Changing password...");
     return _authService.changePassword(newPassword: newPassword);
   }
 
   Future<void> signOut() {
+    debugPrint("[AuthProvider] 🚪 Signing out user...");
     return _authService.signOut();
   }
 

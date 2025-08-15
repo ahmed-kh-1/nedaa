@@ -1,11 +1,11 @@
 class UserModel {
   final String id;
   final String email;
-  final String? fullName;
+  final String? fullName; 
   final String? phone;
   final String? avatarUrl;
   final DateTime createdAt;
-  final DateTime? lastLoginAt;
+  final DateTime? lastLoginAt; // Added this as a field
 
   UserModel({
     required this.id,
@@ -26,7 +26,7 @@ class UserModel {
       avatarUrl: map['avatar_url'],
       createdAt: DateTime.tryParse(map['created_at'] ?? '') ?? DateTime.now(),
       lastLoginAt: map['last_login_at'] != null
-          ? DateTime.tryParse(map['last_login_at'])
+          ? DateTime.tryParse(map['last_login_at']) 
           : null,
     );
   }

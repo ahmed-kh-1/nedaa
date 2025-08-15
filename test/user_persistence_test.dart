@@ -97,7 +97,7 @@ void main() {
       await userService.updateUserInfo(
         fullName: 'Updated User',
         phone: '987654321',
-        avatarUrl: 'https://example.com/new-avatar.jpg',
+        avatarUrl: 'https://example.com/new-avatar.jpg', 
       );
 
       // Retrieve updated user

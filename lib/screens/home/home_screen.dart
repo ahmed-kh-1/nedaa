@@ -1,3 +1,6 @@
+import 'package:call/models/user_model.dart';
+import 'package:call/providers/auth_provider.dart';
+import 'package:call/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:call/widgets/posts/posts_list.dart';
 import 'package:call/providers/post_provider.dart';
@@ -48,7 +51,16 @@ class HomeScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: FloatingActionButton.extended(
-        onPressed: () => Navigator.pushNamed(context, '/create-post'),
+        onPressed:
+            // () {
+            //   // sign out
+            //   //   Provider.of<AuthProvider>(context, listen: false).signOut();
+            //   Provider.of<UserProvider>(context, listen: false).loadUser();
+            //   UserModel? user =
+            //       Provider.of<UserProvider>(context, listen: false).currentUser;
+            //   debugPrint(user?.fullName);
+            // },
+            () => Navigator.pushNamed(context, '/create-post'),
         icon: Icon(
           Icons.add,
           color: Theme.of(context).colorScheme.onSecondary,

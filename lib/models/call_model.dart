@@ -28,7 +28,6 @@ class CallModel {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
       'post_id': postId,
       'organization_id': organizationId,
       'caller_id': callerId,
