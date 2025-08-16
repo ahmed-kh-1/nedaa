@@ -37,7 +37,7 @@ class _NGOBottomSheetContent extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             organization.shortDescription,
-            style: TextStyle(color: Colors.grey),
+            style: const TextStyle(color: Colors.grey),
           ),
           const Divider(height: 32),
           DetailItem(icon: Icons.phone, text: organization.phone),
@@ -88,7 +88,7 @@ class _NGOBottomSheetContent extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
-        icon: const Icon(Icons.phone),
+        icon: const Icon(Icons.call),
         label: const Text('الاتصال الآن'),
         onPressed: () => _makePhoneCall(context, organization.phone),
       ),
@@ -99,8 +99,8 @@ class _NGOBottomSheetContent extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       child: OutlinedButton.icon(
-        icon: const Icon(Icons.call),
-        label: const Text('عرض المكالمات'),
+        icon: const Icon(Icons.speaker_phone),
+        label: const Text('عرض النداءات'),
         onPressed: () => _navigateToCalls(context),
       ),
     );

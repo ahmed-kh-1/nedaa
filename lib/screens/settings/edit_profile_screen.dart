@@ -4,7 +4,6 @@ import 'package:call/widgets/settings/delete_account_button.dart';
 import 'package:call/widgets/settings/delete_account_dialog.dart';
 import 'package:call/widgets/settings/save_button.dart';
 import 'package:call/providers/user_provider.dart';
-import 'package:call/models/user_model.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});

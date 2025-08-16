@@ -11,32 +11,27 @@ class MainTabScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final primaryColor = theme.colorScheme.primary;
     final onPrimaryColor = theme.colorScheme.onPrimary;
-    final surfaceColor = theme.colorScheme.surface;
+    final surfaceColor = theme.scaffoldBackgroundColor;
 
     return DefaultTabController(
       length: 3,
       child: Scaffold(
+        backgroundColor: surfaceColor,
         appBar: AppBar(
-          title: const Text('نداء'),
-          centerTitle: true,
-          backgroundColor: primaryColor,
-          titleTextStyle: TextStyle(
-            fontFamily: 'Tajawal',
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: onPrimaryColor,
-          ),
-          bottom: const TabBar(
-            indicatorColor: Colors.white,
+          title: const Text('نداء',
+              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
+          actions: [
+            Icon(Icons.notifications, color: onPrimaryColor),
+            const SizedBox(width: 16),
+          ],
+          backgroundColor: surfaceColor,
+          bottom: TabBar(
+            indicatorColor: primaryColor,
             indicatorWeight: 3,
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.white70,
-            labelStyle: TextStyle(
-              fontFamily: 'Tajawal',
-              fontWeight: FontWeight.w700,
-              fontSize: 13,
-            ),
-            tabs: [
+            labelColor: primaryColor,
+            unselectedLabelColor:
+                theme.colorScheme.onSurface.withValues(alpha: 0.6),
+            tabs: const [
               Tab(icon: Icon(Icons.home_rounded), text: 'الرئيسية'),
               Tab(
                   icon: Icon(Icons.health_and_safety_rounded),

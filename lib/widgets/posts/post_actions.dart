@@ -1,11 +1,7 @@
-import 'package:call/models/user_model.dart';
-import 'package:call/providers/auth_provider.dart';
-import 'package:call/providers/user_provider.dart';
 import 'package:call/screens/calls/CallsPage.dart';
 import 'package:call/screens/comments/CommentPage.dart';
 import 'package:flutter/material.dart';
 import 'package:call/models/post_model.dart';
-import 'package:provider/provider.dart';
 
 class PostActions extends StatefulWidget {
   final PostModel post;
@@ -45,14 +41,7 @@ class _PostActionsState extends State<PostActions> {
 
   Widget _buildAdoptButton() {
     return TextButton.icon(
-      onPressed: () async {
-        //await Provider.of<AuthProvider>(context, listen: false).signOut();
-        await Provider.of<UserProvider>(context, listen: false).loadUser();
-
-        UserModel? user =
-            Provider.of<UserProvider>(context, listen: false).currentUser;
-        print(user?.fullName);
-      },
+      onPressed: _toggleAdopt,
       style: TextButton.styleFrom(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       ),

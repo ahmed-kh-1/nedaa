@@ -38,7 +38,7 @@ class _CallsPageState extends State<CallsPage> {
 
     if (user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('يجب تسجيل الدخول لإضافة مكالمة')),
+        const SnackBar(content: Text('يجب تسجيل الدخول لإضافة نداء')),
       );
       return;
     }
@@ -172,11 +172,11 @@ class _CallsPageState extends State<CallsPage> {
     try {
       await callProvider.addCall(call);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تم إضافة المكالمة بنجاح')),
+        const SnackBar(content: Text('تم إضافة النداء بنجاح')),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('فشل في إضافة المكالمة: $e')),
+        SnackBar(content: Text('فشل في إضافة النداء: $e')),
       );
     }
   }
@@ -200,7 +200,7 @@ class _CallsPageState extends State<CallsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('المكالمات'),
+        title: const Text('النداءات'),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),

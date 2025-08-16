@@ -1,6 +1,4 @@
-import 'package:call/models/user_model.dart';
-import 'package:call/providers/auth_provider.dart';
-import 'package:call/providers/user_provider.dart';
+
 import 'package:flutter/material.dart';
 import 'package:call/widgets/posts/posts_list.dart';
 import 'package:call/providers/post_provider.dart';

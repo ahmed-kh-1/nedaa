@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../models/organization_model.dart';
-import '../../models/call_model.dart';
 import '../../providers/call_provider.dart';
-import '../../providers/post_provider.dart';
 
 class OrganizationCallsPage extends StatefulWidget {
   final OrganizationModel organization;
@@ -76,7 +74,7 @@ class _OrganizationCallsPageState extends State<OrganizationCallsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.organization.name} - المكالمات'),
+        title: Text('${widget.organization.name} - النداءات'),
       ),
       body: Consumer<CallProvider>(
         builder: (context, callProvider, child) {
@@ -150,7 +148,8 @@ class _OrganizationCallsPageState extends State<OrganizationCallsPage> {
                                               } else if (snapshot.hasError) {
                                                 return const Text('حدث خطأ');
                                               } else {
-                                                return const Text('جاري التحميل...');
+                                                return const Text(
+                                                    'جاري التحميل...');
                                               }
                                             },
                                           ),

@@ -16,7 +16,7 @@ class CallService {
       return response.map((map) => CallModel.fromMap(map)).toList();
     } catch (e) {
       print('Error fetching calls: $e');
-      throw Exception('فشل في جلب المكالمات: $e');
+      throw Exception('فشل في جلب النداءات: $e');
     }
   }
 
@@ -31,7 +31,7 @@ class CallService {
       return response.map((map) => CallModel.fromMap(map)).toList();
     } catch (e) {
       print('Error fetching calls: $e');
-      throw Exception('فشل في جلب المكالمات: $e');
+      throw Exception('فشل في جلب النداءات: $e');
     }
   }
 
@@ -40,7 +40,7 @@ class CallService {
       await _supabase.from(_table).insert(call.toMap());
     } catch (e) {
       print('Error adding call: $e');
-      throw Exception('فشل في إضافة المكالمة: $e');
+      throw Exception('فشل في إضافة النداء: $e');
     }
   }
 
@@ -49,7 +49,7 @@ class CallService {
       await _supabase.from(_table).delete().eq('id', id);
     } catch (e) {
       print('Error deleting call: $e');
-      throw Exception('فشل في حذف المكالمة: $e');
+      throw Exception('فشل في حذف النداء: $e');
     }
   }
 }
