@@ -17,8 +17,8 @@ class OrgnizationsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 3,
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      elevation: 2,
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: InkWell(
         borderRadius: BorderRadius.circular(15),
@@ -30,7 +30,7 @@ class OrgnizationsCard extends StatelessWidget {
             children: [
               _buildHeader(),
               const SizedBox(height: 12),
-              _buildInfoSection(),
+              _buildInfoSection(context),
             ],
           ),
         ),
@@ -75,14 +75,14 @@ class OrgnizationsCard extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoSection() {
+  Widget _buildInfoSection(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         InfoRow(
           icon: Icons.location_on,
           text: organization.location,
-          iconColor: Colors.blue,
+          iconColor: Theme.of(context).colorScheme.primary,
         ),
         InfoRow(
           icon: Icons.access_time,

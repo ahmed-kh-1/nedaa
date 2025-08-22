@@ -4,7 +4,6 @@ import 'package:call/widgets/posts/description_text_field.dart';
 import 'package:call/widgets/posts/emergency_type_dropdown.dart';
 import 'package:call/widgets/posts/image_picker_card.dart';
 import 'package:call/widgets/posts/location_text_field.dart';
-import 'package:call/widgets/posts/create_post_submit_button.dart';
 import 'package:call/models/post_model.dart';
 import 'package:call/providers/post_provider.dart';
 import 'package:flutter/material.dart';
@@ -182,64 +181,91 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'إنشاء بلاغ جديد',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 22,
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.w700,
+            color: theme.colorScheme.onPrimary,
           ),
         ),
         centerTitle: true,
         elevation: 0,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                theme.primaryColorDark,
-                theme.colorScheme.secondary,
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
+        scrolledUnderElevation: 0,
+        backgroundColor: theme.colorScheme.primary,
       ),
       body: postProvider.isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(24),
               child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    ImagePickerCard(
-                      selectedImage: _selectedImage,
-                      onChooseImage: _chooseImageSource,
-                      onRemoveImage: () =>
-                          setState(() => _selectedImage = null),
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          ImagePickerCard(
+                            selectedImage: _selectedImage,
+                            onChooseImage: _chooseImageSource,
+                            onRemoveImage: () =>
+                                setState(() => _selectedImage = null),
+                          ),
+                          const SizedBox(height: 24),
+                          EmergencyTypeDropdown(
+                            selectedType: _selectedType,
+                            emergencyTypes: _emergencyTypes,
+                            onChanged: (value) =>
+                                setState(() => _selectedType = value!),
+                          ),
+                          const SizedBox(height: 24),
+                          DescriptionTextField(
+                            controller: _descriptionController,
+                          ),
+                          const SizedBox(height: 24),
+                          LocationTextField(
+                            controller: _locationController,
+                            isLoading: postProvider.isLoading,
+                            onGetLocation: _getCurrentLocation,
+                          ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 25),
-                    EmergencyTypeDropdown(
-                      selectedType: _selectedType,
-                      emergencyTypes: _emergencyTypes,
-                      onChanged: (value) =>
-                          setState(() => _selectedType = value!),
-                    ),
-                    const SizedBox(height: 25),
-                    DescriptionTextField(
-                      controller: _descriptionController,
-                    ),
-                    const SizedBox(height: 25),
-                    LocationTextField(
-                      controller: _locationController,
-                      isLoading: postProvider.isLoading,
-                      onGetLocation: _getCurrentLocation,
-                    ),
-                    const SizedBox(height: 30),
-                    SubmitButton(
-                      isLoading: postProvider.isLoading,
-                      onSubmit: () => _submitReport(context),
+                    const SizedBox(height: 32),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: ElevatedButton(
+                        onPressed: postProvider.isLoading
+                            ? null
+                            : () => _submitReport(context),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: theme.colorScheme.primary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(28),
+                          ),
+                          elevation: 2,
+                        ),
+                        child: postProvider.isLoading
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white),
+                                ),
+                              )
+                            : Text(
+                                'إرسال البلاغ',
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                      ),
                     ),
                   ],
                 ),

@@ -20,21 +20,24 @@ class CategoriesRow extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 8),
         itemCount: categories.length,
-        itemBuilder: (context, index) => _buildCategoryChip(categories[index]),
+        itemBuilder: (context, index) =>
+            _buildCategoryChip(categories[index], context),
       ),
     );
   }
 
-  Widget _buildCategoryChip(String category) {
+  Widget _buildCategoryChip(String category, BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8),
       child: ChoiceChip(
         label: Text(category),
         selected: selectedCategory == category,
         onSelected: (selected) => onCategorySelected(category),
-        selectedColor: Colors.blue[100],
+        selectedColor: Theme.of(context).colorScheme.primary,
         labelStyle: TextStyle(
-            color: selectedCategory == category ? Colors.blue : Colors.black),
+            color: selectedCategory == category
+                ? Theme.of(context).colorScheme.onPrimary
+                : Theme.of(context).colorScheme.onSurface.withOpacity(0.6)),
       ),
     );
   }

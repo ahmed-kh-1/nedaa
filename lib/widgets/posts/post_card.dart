@@ -16,23 +16,17 @@ class PostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
+    final theme = Theme.of(context);
+    final radius = BorderRadius.circular(12);
+
+    return Card(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: Theme.of(context).cardColor,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+      elevation: 1.5,
+      color: theme.cardColor,
+      shape: RoundedRectangleBorder(borderRadius: radius),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: radius,
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -42,55 +36,50 @@ class PostCard extends StatelessWidget {
               const SizedBox(height: 12),
               Text(
                 post.postText,
-                style: TextStyle(
-                  fontSize: 16,
+                style: theme.textTheme.bodyLarge?.copyWith(
                   height: 1.5,
-                  color: Theme.of(context).colorScheme.onSurface,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: 12),
               if (post.imageUrl != null)
-                Container(
-                  height: 200,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    image: DecorationImage(
-                      image: NetworkImage(post.imageUrl!),
-                      fit: BoxFit.cover,
-                    ),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.network(
+                    post.imageUrl!,
+                    height: 200,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
                   ),
                 ),
-              const SizedBox(height: 12),
-              // Location link
+              if (post.imageUrl != null) const SizedBox(height: 12),
               if (post.locationUrl.isNotEmpty)
-                GestureDetector(
-                  onTap: () async {
-                    final url = Uri.parse(post.locationUrl);
-                    if (await canLaunchUrl(url)) {
-                      await launchUrl(url,
-                          mode: LaunchMode.externalApplication);
-                    } else {
-                      throw 'Could not launch $url';
-                    }
-                  },
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.location_on,
-                        size: 16,
-                        color: Theme.of(context).colorScheme.primary,
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton.icon(
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: const Size(0, 0),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    onPressed: () async {
+                      final url = Uri.parse(post.locationUrl);
+                      if (await canLaunchUrl(url)) {
+                        await launchUrl(url, mode: LaunchMode.externalApplication);
+                      }
+                    },
+                    icon: Icon(
+                      Icons.location_on,
+                      size: 18,
+                      color: theme.colorScheme.primary,
+                    ),
+                    label: Text(
+                      'عرض الموقع',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.primary,
+                        decoration: TextDecoration.underline,
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'عرض الموقع',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Theme.of(context).colorScheme.primary,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               const SizedBox(height: 8),

@@ -3,14 +3,15 @@ import 'package:flutter/material.dart';
 class AppTheme {
   // ------ Colors ------ //
   static const Color primaryColor =
-      Color.fromRGBO(33, 133, 173, 1); // بنفسجي داكن
+      Color(0xFFFF6F00); // برتقالي قوي (Amber 800)
   static const Color secondaryColor =
-      Color.fromARGB(255, 5, 62, 103); // بنفسجي فاتح
-  static const Color accentColor = Color(0xFF212121); // أسود
-  static const Color backgroundColor = Color(0xFFF5F5F5); // خلفية فاتحة
+      Color(0xFFFFA726); // برتقالي فاتح (Amber 400)
+  static const Color accentColor = Color(0xFF424242); // رمادي غامق للنصوص
+  static const Color backgroundColor =
+      Color(0xFFFDF6F0); // خلفية فاتحة مائلة للبرتقالي
   static const Color cardColor = Color(0xFFFFFFFF); // أبيض للكروت
   static const Color errorColor = Color(0xFFD32F2F); // أحمر للخطأ
-  static const Color successColor = Color(0xFF388E3C); // أخضر للنجاح
+  static const Color successColor = Color(0xFF2E7D32); // أخضر للنجاح
 
   // ------ Button Styles ------ //
   static final ButtonStyle elevatedButtonStyle = ElevatedButton.styleFrom(
@@ -29,6 +30,11 @@ class AppTheme {
       primaryColor: primaryColor,
       scaffoldBackgroundColor: backgroundColor,
       cardColor: cardColor,
+      appBarTheme: const AppBarTheme(
+        backgroundColor: primaryColor,
+        foregroundColor: Colors.white,
+        elevation: 0,
+      ),
       colorScheme: const ColorScheme(
         brightness: Brightness.light,
         primary: primaryColor,
@@ -54,6 +60,11 @@ class AppTheme {
       primaryColor: primaryColor,
       scaffoldBackgroundColor: darkBackground,
       cardColor: darkCard,
+      appBarTheme: const AppBarTheme(
+        backgroundColor: primaryColor,
+        foregroundColor: Colors.white,
+        elevation: 0,
+      ),
       colorScheme: const ColorScheme(
         brightness: Brightness.dark,
         primary: primaryColor,
