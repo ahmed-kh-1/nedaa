@@ -80,7 +80,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
       subtitle: Text(subtitle),
       value: value,
       onChanged: onChanged,
-      activeColor: Colors.blue,
+      activeColor: Theme.of(context).colorScheme.primary,
     );
   }
 }

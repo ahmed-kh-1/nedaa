@@ -88,6 +88,9 @@ class _NGOBottomSheetContent extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+        ),
         icon: const Icon(Icons.call),
         label: const Text('الاتصال الآن'),
         onPressed: () => _makePhoneCall(context, organization.phone),

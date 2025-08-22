@@ -28,7 +28,7 @@ class OrgnizationsCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeader(),
+              _buildHeader(context),
               const SizedBox(height: 12),
               _buildInfoSection(context),
             ],
@@ -38,19 +38,19 @@ class OrgnizationsCard extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
     return Row(
       children: [
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: _getSpecializationColor().withOpacity(0.2),
+            color: _getSpecializationColor(context).withValues(alpha: 0.2),
             shape: BoxShape.circle,
           ),
           child: Icon(
             _getSpecializationIcon(),
             size: 28,
-            color: _getSpecializationColor(),
+            color: _getSpecializationColor(context),
           ),
         ),
         const SizedBox(width: 16),
@@ -101,9 +101,9 @@ class OrgnizationsCard extends StatelessWidget {
         Icons.family_restroom
       ][index % 5];
 
-  Color _getSpecializationColor() => const [
+  Color _getSpecializationColor(BuildContext context) => [
         Colors.red,
-        Colors.blue,
+        Theme.of(context).colorScheme.primary,
         Colors.purple,
         Colors.green,
         Colors.orange

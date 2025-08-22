@@ -200,7 +200,7 @@ class _CommentPageState extends State<CommentPage> {
               // أيقونة المستخدم أو صورة البروفايل
               CircleAvatar(
                 radius: 18,
-                backgroundColor: Colors.blue.shade300,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 child: const Icon(Icons.person, color: Colors.white),
               ),
               const SizedBox(width: 12),
@@ -326,7 +326,8 @@ class _CommentPageState extends State<CommentPage> {
                       ),
                       const SizedBox(width: 8),
                       IconButton(
-                        icon: const Icon(Icons.send, color: Colors.blue),
+                        icon:   Icon(Icons.send,
+                            color: Theme.of(context).colorScheme.primary),
                         onPressed: () {
                           final text = _controller.text.trim();
                           if (text.isNotEmpty) {
