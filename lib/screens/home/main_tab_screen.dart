@@ -2,6 +2,7 @@ import 'package:call/screens/home/home_screen.dart';
 import 'package:call/screens/organizations/orgnizations_screen.dart';
 import 'package:call/screens/settings/profile_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MainTabScreen extends StatelessWidget {
   const MainTabScreen({super.key});
@@ -49,7 +50,8 @@ class MainTabScreen extends StatelessWidget {
           ),
           actions: [
             IconButton(
-              onPressed: () {
+              onPressed: () async{
+                await Supabase.instance.client.auth.signOut();
                 // TODO: Handle notifications
               },
               icon: Stack(

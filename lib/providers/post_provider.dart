@@ -86,7 +86,9 @@ class PostProvider with ChangeNotifier {
       } else {
         await _service.updatePost(id, post);
       }
+      // Refresh lists so all screens stay in sync
       await fetchPosts();
+      await fetchUserPosts();
     } catch (e) {
       _setError(e.toString());
     } finally {
@@ -99,7 +101,9 @@ class PostProvider with ChangeNotifier {
     _setError(null);
     try {
       await _service.deletePost(id);
+      // Refresh lists so all screens stay in sync
       await fetchPosts();
+      await fetchUserPosts();
     } catch (e) {
       _setError(e.toString());
     } finally {

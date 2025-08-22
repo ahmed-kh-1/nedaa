@@ -12,7 +12,8 @@ import 'package:provider/provider.dart';
 import 'dart:io';
 
 class CreatePostScreen extends StatefulWidget {
-  const CreatePostScreen({super.key});
+  final PostModel? initialPost;
+  const CreatePostScreen({super.key, this.initialPost});
 
   @override
   State<CreatePostScreen> createState() => _CreatePostScreenState();
@@ -24,6 +25,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   final _locationController = TextEditingController();
   String _selectedType = 'حالة طارئة';
   File? _selectedImage;
+  String? _existingImageUrl; // for edit mode existing image
 
   final List<String> _emergencyTypes = [
     'حالة طارئة',
@@ -31,6 +33,31 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     'حادث مروري',
     'حالة صحية'
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    final p = widget.initialPost;
+    if (p != null) {
+      _descriptionController.text = p.postText;
+      _locationController.text = p.locationUrl;
+      _existingImageUrl = p.imageUrl;
+      // map stored type to dropdown label
+      switch (p.postType) {
+        case 'fire':
+          _selectedType = 'حريق';
+          break;
+        case 'accident':
+          _selectedType = 'حادث مروري';
+          break;
+        case 'health':
+          _selectedType = 'حالة صحية';
+          break;
+        default:
+          _selectedType = 'حالة طارئة';
+      }
+    }
+  }
 
   Future<void> _getCurrentLocation() async {
     try {
@@ -101,6 +128,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     final postProvider = Provider.of<PostProvider>(context, listen: false);
     final userProvider = Provider.of<UserProvider>(context, listen: false);
 
+    await userProvider.loadUser();
+
     // جلب بيانات المستخدم الحالي
     final currentUser = userProvider.currentUser;
 
@@ -115,46 +144,71 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       return;
     }
 
-    // إنشاء البلاغ الجديد باستخدام بيانات المستخدم
-    final newPost = PostModel(
-      postId: '',
-      posterName: currentUser.fullName ?? "مجهول", // من UserProvider
-      posterId: currentUser.id, // من UserProvider
-      postText: _descriptionController.text,
-      postType: _selectedType == 'حالة طارئة'
-          ? 'emergency'
-          : _selectedType == 'حريق'
-              ? 'fire'
-              : _selectedType == 'حادث مروري'
-                  ? 'accident'
-                  : 'health',
-      isAdopted: false,
-      imageUrl: null, // سيتم تحديثها بعد رفع الصورة
-      locationUrl: _locationController.text,
-      createdAt: DateTime.now(),
-    );
+    // if editing
+    final bool isEditing = widget.initialPost != null;
 
     try {
-      await postProvider.addPost(newPost, image: _selectedImage);
+      if (isEditing) {
+        // build updated post
+        final updated = widget.initialPost!.copyWith(
+          postText: _descriptionController.text,
+          postType: _selectedType == 'حالة طارئة'
+              ? 'emergency'
+              : _selectedType == 'حريق'
+                  ? 'fire'
+                  : _selectedType == 'حادث مروري'
+                      ? 'accident'
+                      : 'health',
+          // if user removed existing image and didn't add new one
+          imageUrl: (_selectedImage == null) ? _existingImageUrl : widget.initialPost!.imageUrl,
+          locationUrl: _locationController.text,
+        );
+
+        await postProvider.updatePost(widget.initialPost!.postId, updated, image: _selectedImage);
+      } else {
+        // إنشاء البلاغ الجديد باستخدام بيانات المستخدم
+        final newPost = PostModel(
+          postId: '',
+          posterName: currentUser.fullName ?? "مجهول", // من UserProvider
+          posterId: currentUser.id, // من UserProvider
+          postText: _descriptionController.text,
+          postType: _selectedType == 'حالة طارئة'
+              ? 'emergency'
+              : _selectedType == 'حريق'
+                  ? 'fire'
+                  : _selectedType == 'حادث مروري'
+                      ? 'accident'
+                      : 'health',
+          isAdopted: false,
+          imageUrl: null, // سيتم تحديثها بعد رفع الصورة
+          locationUrl: _locationController.text,
+          createdAt: DateTime.now(),
+        );
+        await postProvider.addPost(newPost, image: _selectedImage);
+      }
 
       if (postProvider.errorMessage == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('تم إرسال البلاغ بنجاح'),
+            content: Text(isEditing ? 'تم حفظ التعديلات' : 'تم إرسال البلاغ بنجاح'),
             backgroundColor: Theme.of(context).colorScheme.secondary,
           ),
         );
 
-        // مسح الحقول
-        _descriptionController.clear();
-        _locationController.clear();
-        setState(() {
-          _selectedImage = null;
-          _selectedType = 'حالة طارئة';
-        });
-
-        // العودة للخلف
-        Navigator.pop(context);
+        if (isEditing) {
+          Navigator.pop(context, true);
+        } else {
+          // مسح الحقول
+          _descriptionController.clear();
+          _locationController.clear();
+          setState(() {
+            _selectedImage = null;
+            _existingImageUrl = null;
+            _selectedType = 'حالة طارئة';
+          });
+          // العودة للخلف
+          Navigator.pop(context);
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -182,7 +236,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'إنشاء بلاغ جديد',
+          widget.initialPost == null ? 'إنشاء بلاغ جديد' : 'تعديل البلاغ',
           style: theme.textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.w700,
             color: theme.colorScheme.onPrimary,
@@ -207,12 +261,62 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          ImagePickerCard(
-                            selectedImage: _selectedImage,
-                            onChooseImage: _chooseImageSource,
-                            onRemoveImage: () =>
-                                setState(() => _selectedImage = null),
-                          ),
+                          // For edit mode: show existing network image if present and no new image selected
+                          if (_selectedImage == null && _existingImageUrl != null)
+                            GestureDetector(
+                              onTap: _chooseImageSource,
+                              child: Container(
+                                height: 200,
+                                decoration: BoxDecoration(
+                                  color: theme.cardColor,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: theme.primaryColor,
+                                    width: 2,
+                                  ),
+                                ),
+                                child: Stack(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Image.network(
+                                        _existingImageUrl!,
+                                        width: double.infinity,
+                                        height: double.infinity,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: 8,
+                                      right: 8,
+                                      child: GestureDetector(
+                                        onTap: () => setState(() => _existingImageUrl = null),
+                                        child: Container(
+                                          decoration: const BoxDecoration(
+                                            color: Colors.black54,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Padding(
+                                            padding: EdgeInsets.all(5),
+                                            child: Icon(
+                                              Icons.close,
+                                              color: Colors.white,
+                                              size: 20,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          else
+                            ImagePickerCard(
+                              selectedImage: _selectedImage,
+                              onChooseImage: _chooseImageSource,
+                              onRemoveImage: () => setState(() => _selectedImage = null),
+                            ),
                           const SizedBox(height: 24),
                           EmergencyTypeDropdown(
                             selectedType: _selectedType,
@@ -259,7 +363,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                 ),
                               )
                             : Text(
-                                'إرسال البلاغ',
+                                widget.initialPost == null ? 'إرسال البلاغ' : 'حفظ التعديل',
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
