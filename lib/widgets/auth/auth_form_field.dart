@@ -11,6 +11,9 @@ class AuthFormField extends StatelessWidget {
   final bool obscureText;
   final String? Function(String?)? validator;
   final bool enabled;
+  final int maxLines;
+  final bool readOnly;
+  final VoidCallback? onTap;
 
   const AuthFormField({
     super.key,
@@ -24,6 +27,9 @@ class AuthFormField extends StatelessWidget {
     this.obscureText = false,
     this.validator,
     this.enabled = true,
+    this.maxLines = 1,
+    this.readOnly = false,
+    this.onTap,
   });
 
   @override
@@ -48,6 +54,9 @@ class AuthFormField extends StatelessWidget {
           obscureText: obscureText,
           enabled: enabled,
           validator: validator,
+          maxLines: maxLines,
+          readOnly: readOnly,
+          onTap: onTap,
           style: theme.textTheme.bodyLarge?.copyWith(
             color: theme.colorScheme.onSurface,
             fontWeight: FontWeight.w500,
@@ -110,3 +119,4 @@ class AuthFormField extends StatelessWidget {
     );
   }
 }
+

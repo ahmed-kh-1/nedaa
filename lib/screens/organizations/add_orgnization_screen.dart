@@ -1,5 +1,9 @@
 import 'package:call/models/organization_model.dart';
 import 'package:call/providers/organization_provider.dart';
+import 'package:call/widgets/auth/auth_form_field.dart';
+import 'package:call/widgets/auth/auth_header.dart';
+import 'package:call/widgets/auth/auth_primary_button.dart';
+import 'package:call/widgets/auth/auth_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -20,55 +24,32 @@ class _AddOrganizationScreenState extends State<AddOrganizationScreen> {
     return '${_openTime!.format(context)} - ${_closeTime!.format(context)}';
   }
 
-
-
-  Widget _buildWorkingHoursPicker(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          Expanded(
-            child: OutlinedButton(
-              onPressed: () async {
-                final open = await showTimePicker(
-                  context: context,
-                  initialTime: _openTime ?? TimeOfDay(hour: 8, minute: 0),
-                  helpText: 'اختر وقت البداية',
-                  confirmText: 'تم',
-                  cancelText: 'إلغاء',
-                );
-                if (open != null) {
-                  setState(() => _openTime = open);
-                }
-              },
-              child: Text(_openTime != null
-                  ? 'من: ${_openTime!.format(context)}'
-                  : 'وقت البداية'),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: OutlinedButton(
-              onPressed: () async {
-                final close = await showTimePicker(
-                  context: context,
-                  initialTime: _closeTime ?? TimeOfDay(hour: 17, minute: 0),
-                  helpText: 'اختر وقت النهاية',
-                  confirmText: 'تم',
-                  cancelText: 'إلغاء',
-                );
-                if (close != null) {
-                  setState(() => _closeTime = close);
-                }
-              },
-              child: Text(_closeTime != null
-                  ? 'إلى: ${_closeTime!.format(context)}'
-                  : 'وقت النهاية'),
-            ),
-          ),
-        ],
-      ),
+  Future<void> _pickWorkingHours() async {
+    final open = await showTimePicker(
+      context: context,
+      initialTime: _openTime ?? const TimeOfDay(hour: 8, minute: 0),
+      helpText: 'اختر وقت البداية',
+      confirmText: 'تم',
+      cancelText: 'إلغاء',
     );
+    if (!mounted) return;
+    if (open != null) {
+      final close = await showTimePicker(
+        context: context,
+        initialTime: _closeTime ?? const TimeOfDay(hour: 17, minute: 0),
+        helpText: 'اختر وقت النهاية',
+        confirmText: 'تم',
+        cancelText: 'إلغاء',
+      );
+      if (!mounted) return;
+      setState(() {
+        _openTime = open;
+        if (close != null) {
+          _closeTime = close;
+        }
+        _workingHoursController.text = workingHoursString;
+      });
+    }
   }
 
   final _formKey = GlobalKey<FormState>();
@@ -79,6 +60,7 @@ class _AddOrganizationScreenState extends State<AddOrganizationScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
+  final TextEditingController _workingHoursController = TextEditingController();
 
   
   bool _isLoading = false;
@@ -118,56 +100,115 @@ class _AddOrganizationScreenState extends State<AddOrganizationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('إضافة جمعية')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              _buildTextField(_nameController, 'اسم الجمعية'),
-              _buildTextField(_shortDescController, 'نبذة مختصرة'),
-              _buildTextField(_descriptionController, 'وصف عام', maxLines: 3),
-              _buildTextField(_phoneController, 'رقم الجوال',
-                  keyboardType: TextInputType.phone),
-              _buildTextField(_emailController, 'البريد الإلكتروني',
-                  keyboardType: TextInputType.emailAddress),
-              _buildTextField(_locationController, 'الموقع الجغرافي'),
-              _buildWorkingHoursPicker(context),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _isLoading ? null : _submitForm,
-                child: _isLoading
-                    ? const CircularProgressIndicator()
-                    : const Text('إضافة'),
-              ),
-            ],
+    return AuthScaffold(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const AuthHeader(
+            icon: Icons.apartment,
+            title: 'إضافة جمعية',
+            subtitle: 'أدخل تفاصيل جمعيتك لإتمام التسجيل',
           ),
-        ),
+          const SizedBox(height: 32),
+          Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                AuthFormField(
+                  label: 'اسم الجمعية',
+                  controller: _nameController,
+                  prefixIcon: Icons.business_outlined,
+                  textInputAction: TextInputAction.next,
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? 'هذا الحقل مطلوب' : null,
+                ),
+                const SizedBox(height: 20),
+                AuthFormField(
+                  label: 'نبذة مختصرة',
+                  controller: _shortDescController,
+                  prefixIcon: Icons.info_outline,
+                  textInputAction: TextInputAction.next,
+                  maxLines: 2,
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? 'هذا الحقل مطلوب' : null,
+                ),
+                const SizedBox(height: 20),
+                AuthFormField(
+                  label: 'وصف عام',
+                  controller: _descriptionController,
+                  prefixIcon: Icons.description_outlined,
+                  textInputAction: TextInputAction.newline,
+                  keyboardType: TextInputType.multiline,
+                  maxLines: 4,
+                ),
+                const SizedBox(height: 20),
+                AuthFormField(
+                  label: 'رقم الجوال',
+                  controller: _phoneController,
+                  prefixIcon: Icons.phone_outlined,
+                  keyboardType: TextInputType.phone,
+                  textInputAction: TextInputAction.next,
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? 'هذا الحقل مطلوب' : null,
+                ),
+                const SizedBox(height: 20),
+                AuthFormField(
+                  label: 'البريد الإلكتروني',
+                  controller: _emailController,
+                  prefixIcon: Icons.email_outlined,
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) return 'هذا الحقل مطلوب';
+                    if (!RegExp(r'^[\w\.-]+@([\w-]+\.)+[\w-]{2,4}$')
+                        .hasMatch(value)) {
+                      return 'بريد إلكتروني غير صالح';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 20),
+                AuthFormField(
+                  label: 'الموقع الجغرافي',
+                  controller: _locationController,
+                  prefixIcon: Icons.location_on_outlined,
+                  textInputAction: TextInputAction.next,
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? 'هذا الحقل مطلوب' : null,
+                ),
+                const SizedBox(height: 20),
+                AuthFormField(
+                  label: 'ساعات العمل',
+                  controller: _workingHoursController,
+                  prefixIcon: Icons.access_time,
+                  readOnly: true,
+                  onTap: _pickWorkingHours,
+                  hint: 'مثال: 08:00 - 17:00',
+                ),
+                const SizedBox(height: 32),
+                AuthPrimaryButton(
+                  label: 'إضافة الجمعية',
+                  loading: _isLoading,
+                  onPressed: _isLoading ? null : _submitForm,
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildTextField(
-    TextEditingController controller,
-    String label, {
-    TextInputType keyboardType = TextInputType.text,
-    int maxLines = 1,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextFormField(
-        controller: controller,
-        keyboardType: keyboardType,
-        maxLines: maxLines,
-        decoration: InputDecoration(
-          labelText: label,
-          border: const OutlineInputBorder(),
-        ),
-        validator: (value) =>
-            value == null || value.trim().isEmpty ? 'هذا الحقل مطلوب' : null,
-      ),
-    );
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _shortDescController.dispose();
+    _descriptionController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
+    _locationController.dispose();
+    _workingHoursController.dispose();
+    super.dispose();
   }
 }

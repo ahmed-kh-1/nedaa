@@ -56,7 +56,11 @@ class _SignupScreenState extends State<SignupScreen> {
           ),
         ),
       );
-      Navigator.pushReplacementNamed(context, '/main-tab');
+      if(userType == UserType.user){
+        Navigator.pushReplacementNamed(context, '/main-tab');
+      }else{
+        Navigator.pushReplacementNamed(context, '/add-organization');
+      }
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
