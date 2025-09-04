@@ -1,5 +1,6 @@
 import 'package:call/models/organization_model.dart';
 import 'package:call/screens/calls/OrganizationCallsPage.dart';
+import 'package:call/screens/adoptions/OrganizationAdoptionsPage.dart';
 import 'package:call/widgets/orgnizations/detail_item.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -29,24 +30,38 @@ class _NGOBottomSheetContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildHandleIndicator(),
-          Text(
-            organization.name,
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHandleIndicator(),
+                  Text(
+                    organization.name,
+                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    organization.shortDescription,
+                    style: const TextStyle(color: Colors.grey),
+                  ),
+                  const Divider(height: 32),
+                  DetailItem(icon: Icons.phone, text: organization.phone),
+                  DetailItem(icon: Icons.location_on, text: organization.location),
+                  DetailItem(icon: Icons.access_time, text: organization.workingHours),
+                  const SizedBox(height: 24),
+                  _buildDescription(),
+                ],
+              ),
+            ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            organization.shortDescription,
-            style: const TextStyle(color: Colors.grey),
+          Row(
+            children: [
+              Expanded(child: _buildViewCallsButton(context)),
+              const SizedBox(width: 8),
+              Expanded(child: _buildViewAdoptionsButton(context)),
+            ],
           ),
-          const Divider(height: 32),
-          DetailItem(icon: Icons.phone, text: organization.phone),
-          DetailItem(icon: Icons.location_on, text: organization.location),
-          DetailItem(icon: Icons.access_time, text: organization.workingHours),
-          const SizedBox(height: 24),
-          _buildDescription(),
-          const Spacer(),
-          _buildViewCallsButton(context),
           const SizedBox(height: 8),
           _buildCallButton(context),
         ],
@@ -109,12 +124,33 @@ class _NGOBottomSheetContent extends StatelessWidget {
     );
   }
 
+  Widget _buildViewAdoptionsButton(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton.icon(
+        icon: const Icon(Icons.favorite_rounded),
+        label: const Text('عرض التبنّيات'),
+        onPressed: () => _navigateToAdoptions(context),
+      ),
+    );
+  }
+
   void _navigateToCalls(BuildContext context) {
     Navigator.pop(context); // Close the bottom sheet first
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => OrganizationCallsPage(organization: organization),
+      ),
+    );
+  }
+
+  void _navigateToAdoptions(BuildContext context) {
+    Navigator.pop(context); // Close the bottom sheet first
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => OrganizationAdoptionsPage(organization: organization),
       ),
     );
   }
@@ -130,3 +166,4 @@ class _NGOBottomSheetContent extends StatelessWidget {
     }
   }
 }
+

@@ -201,12 +201,10 @@ class _CallsPageState extends State<CallsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('النداءات'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: _addCall,
-          ),
-        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _addCall,
+        child: const Icon(Icons.add),
       ),
       body: Consumer2<CallProvider, OrganizationProvider>(
         builder: (context, callProvider, orgProvider, child) {

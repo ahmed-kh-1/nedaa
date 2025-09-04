@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:call/providers/auth_provider.dart';
+import 'package:call/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -44,6 +45,7 @@ class _SplashScreenState extends State<SplashScreen>
 
     if (auth.getSession() != null) {
       Navigator.pushReplacementNamed(context, '/main-tab');
+      Provider.of<UserProvider>(context , listen: false).loadUser();
     } else {
       Navigator.pushReplacementNamed(context, '/signin');
     }

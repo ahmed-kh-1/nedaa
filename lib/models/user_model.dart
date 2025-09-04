@@ -6,6 +6,7 @@ class UserModel {
   final String? avatarUrl;
   final DateTime createdAt;
   final DateTime? lastLoginAt; // Added this as a field
+  final String? accountType; // 'user' or 'association'
 
   UserModel({
     required this.id,
@@ -15,6 +16,7 @@ class UserModel {
     this.avatarUrl,
     required this.createdAt,
     this.lastLoginAt,
+    this.accountType,
   });
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
@@ -28,6 +30,7 @@ class UserModel {
       lastLoginAt: map['last_login_at'] != null
           ? DateTime.tryParse(map['last_login_at']) 
           : null,
+      accountType: map['account_type'],
     );
   }
 
@@ -40,6 +43,7 @@ class UserModel {
       'avatar_url': avatarUrl,
       'created_at': createdAt.toIso8601String(),
       'last_login_at': lastLoginAt?.toIso8601String(),
+      'account_type': accountType,
     };
   }
 
@@ -51,6 +55,7 @@ class UserModel {
     String? avatarUrl,
     DateTime? createdAt,
     DateTime? lastLoginAt,
+    String? accountType,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -60,6 +65,7 @@ class UserModel {
       avatarUrl: avatarUrl ?? this.avatarUrl,
       createdAt: createdAt ?? this.createdAt,
       lastLoginAt: lastLoginAt ?? this.lastLoginAt,
+      accountType: accountType ?? this.accountType,
     );
   }
 }

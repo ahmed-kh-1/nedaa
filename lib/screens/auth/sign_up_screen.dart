@@ -1,3 +1,5 @@
+import 'package:call/providers/user_provider.dart';
+import 'package:call/screens/organizations/add_orgnization_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:call/providers/auth_provider.dart';
@@ -58,8 +60,10 @@ class _SignupScreenState extends State<SignupScreen> {
       );
       if(userType == UserType.user){
         Navigator.pushReplacementNamed(context, '/main-tab');
+        Provider.of<UserProvider>(context , listen: false).loadUser();
+
       }else{
-        Navigator.pushReplacementNamed(context, '/add-organization');
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => AddOrganizationScreen(name: nameController.text, email: emailController.text),));
       }
     } catch (e) {
       if (!mounted) return;

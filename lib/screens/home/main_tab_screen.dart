@@ -3,6 +3,10 @@ import 'package:call/screens/organizations/orgnizations_screen.dart';
 import 'package:call/screens/settings/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:call/providers/user_provider.dart';
+import 'package:call/models/organization_model.dart';
+import 'package:call/screens/calls/OrganizationCallsPage.dart';
 
 class MainTabScreen extends StatelessWidget {
   const MainTabScreen({super.key});
@@ -12,6 +16,10 @@ class MainTabScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final primaryColor = theme.colorScheme.primary;
     final surfaceColor = theme.colorScheme.surface;
+    final userProvider = context.watch<UserProvider>();
+    final bool isAssociation =
+        (userProvider.currentUser?.accountType ?? '').toLowerCase() ==
+            'association';
 
     return DefaultTabController(
       length: 3,
@@ -49,40 +57,73 @@ class MainTabScreen extends StatelessWidget {
             ),
           ),
           actions: [
-            IconButton(
-              onPressed: () async{
-                await Supabase.instance.client.auth.signOut();
-                // TODO: Handle notifications
-              },
-              icon: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Icon(
-                    Icons.notifications_outlined,
-                    size: 28,
-                    color: theme.colorScheme.onSurface,
-                  ),
-                  Positioned(
-                    top: 2,
-                    right: 2,
-                    child: Container(
-                      width: 10,
-                      height: 10,
-                      decoration: BoxDecoration(
-                        color: primaryColor,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: surfaceColor,
-                          width: 1.5,
+            if (isAssociation)
+              IconButton(
+                onPressed: () async {
+                  try {
+                    final userId = Supabase.instance.client.auth.currentUser?.id;
+                    if (userId == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('المستخدم غير مسجّل')),
+                      );
+                      return;
+                    }
+
+                    final data = await Supabase.instance.client
+                        .from('organizations')
+                        .select()
+                        .eq('owner_id', userId)
+                        .maybeSingle();
+
+                    if (data == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('لم يتم العثور على جمعية مرتبطة بهذا الحساب')),
+                      );
+                      return;
+                    }
+
+                    final org = OrganizationModel.fromMap(data);
+                    if (!context.mounted) return;
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => OrganizationCallsPage(organization: org),
+                      ),
+                    );
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('تعذر فتح النداءات: $e')),
+                    );
+                  }
+                },
+                icon: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Icon(
+                      Icons.notifications_outlined,
+                      size: 28,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                    Positioned(
+                      top: 2,
+                      right: 2,
+                      child: Container(
+                        width: 10,
+                        height: 10,
+                        decoration: BoxDecoration(
+                          color: primaryColor,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: surfaceColor,
+                            width: 1.5,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
+                tooltip: 'الإشعارات',
               ),
-              tooltip: 'الإشعارات',
-            ),
-            const SizedBox(width: 8),
+            if (isAssociation) const SizedBox(width: 8),
           ],
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(kTextTabBarHeight + 8),

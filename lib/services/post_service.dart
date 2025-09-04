@@ -89,4 +89,47 @@ class PostService {
       throw Exception('فشل في جلب البلاغ: $e');
     }
   }
+
+  /// Mark post as adopted by the current user's organization and log adoption.
+  Future<void> adoptPost(String postId) async {
+    try {
+      final user = _supabase.auth.currentUser;
+      if (user == null) {
+        throw Exception('يجب تسجيل الدخول لإتمام العملية');
+      }
+
+      // Validate account type from user metadata if available
+      final accountType = user.userMetadata?['account_type'];
+      if (accountType != 'association') {
+        throw Exception('هذا الإجراء متاح فقط لحسابات الجمعيات');
+      }
+
+      // Find the organization that belongs to this user (owner_id = auth.users.id)
+      final orgRow = await _supabase
+          .from('organizations')
+          .select('id')
+          .eq('owner_id', user.id)
+          .maybeSingle();
+
+      if (orgRow == null || orgRow['id'] == null) {
+        throw Exception('لم يتم العثور على جمعية مرتبطة بهذا الحساب');
+      }
+      final String orgId = orgRow['id'] as String;
+
+      // 1) Update post as adopted
+      await _supabase
+          .from(_table)
+          .update({'is_adopted': true})
+          .eq('id', postId);
+
+      // 2) Insert adoption record
+      await _supabase.from('adoptions').insert({
+        'post_id': postId,
+        'org_id': orgId,
+      });
+    } catch (e) {
+      print('Error adopting post: $e');
+      throw Exception('فشل في تبني البلاغ: $e');
+    }
+  }
 }

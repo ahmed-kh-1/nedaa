@@ -5,7 +5,7 @@ class SettingItem extends StatelessWidget {
   final String title;
   final Widget destination;
   final VoidCallback? onTap;
-
+   
   const SettingItem({
     super.key,
     required this.icon,

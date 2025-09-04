@@ -136,4 +136,25 @@ class PostProvider with ChangeNotifier {
       return null;
     }
   }
+
+  Future<void> adoptPost(String postId) async {
+    _setLoading(true);
+    _setError(null);
+    try {
+      await _service.adoptPost(postId);
+      // Update local state
+      _posts = _posts
+          .map((p) => p.postId == postId ? p.copyWith(isAdopted: true) : p)
+          .toList();
+      if (_currentPost?.postId == postId) {
+        _currentPost = _currentPost!.copyWith(isAdopted: true);
+      }
+      notifyListeners();
+    } catch (e) {
+      _setError(e.toString());
+      rethrow;
+    } finally {
+      _setLoading(false);
+    }
+  }
 }

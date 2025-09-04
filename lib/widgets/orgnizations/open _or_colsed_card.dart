@@ -77,17 +77,24 @@ class OrgnizationsCard extends StatelessWidget {
 
   Widget _buildInfoSection(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        InfoRow(
-          icon: Icons.location_on,
-          text: organization.location,
-          iconColor: Theme.of(context).colorScheme.primary,
+        Expanded(
+          child: InfoRow(
+            icon: Icons.location_on,
+            text: organization.location,
+            iconColor: Theme.of(context).colorScheme.primary,
+          ),
         ),
-        InfoRow(
-          icon: Icons.access_time,
-          text: 'مفتوح الآن',
-          iconColor: Colors.green,
+        const SizedBox(width: 12),
+        Expanded(
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: InfoRow(
+              icon: Icons.access_time,
+              text: 'مفتوح الآن',
+              iconColor: Colors.green,
+            ),
+          ),
         ),
       ],
     );

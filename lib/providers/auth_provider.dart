@@ -22,20 +22,20 @@ class AuthProvider with ChangeNotifier {
         accountType: accountType,
       );
 
-      if (result != null) {
-        final supabase = Supabase.instance.client;
-        final user = supabase.auth.currentUser;
-        if (user != null) {
-          final userModel = UserModel(
-            id: user.id,
-            email: user.email ?? '',
-            fullName: name,
-            createdAt: DateTime.now(),
-          );
-          await UserService().saveUser(userModel);
-          debugPrint("[AuthProvider] ✅ Signup successful and user saved.");
-        }
+      final supabase = Supabase.instance.client;
+      final user = supabase.auth.currentUser;
+      if (user != null) {
+        final userModel = UserModel(
+          id: user.id,
+          email: user.email ?? '',
+          fullName: name,
+          accountType: accountType,
+          createdAt: DateTime.now(),
+        );
+        await UserService().saveUser(userModel);
+        debugPrint("[AuthProvider] ✅ Signup successful and user saved.");
       }
+
       return result;
     } catch (e) {
       debugPrint("[AuthProvider] ❌ Signup failed: $e");
@@ -60,11 +60,12 @@ class AuthProvider with ChangeNotifier {
           // 🔹 Fetch name from accounts table
           final accountRes = await supabase
               .from('accounts')
-              .select('name')
+              .select()
               .eq('id', user.id)
               .maybeSingle();
 
           final accountName = accountRes?['name'] as String?;
+          final accountType = accountRes?['account_type'] as String?;
 
           final existingUser = await UserService().getCurrentUser();
           final userModel = existingUser?.copyWith(
@@ -72,14 +73,18 @@ class AuthProvider with ChangeNotifier {
                 email: user.email ?? '',
                 fullName: accountName, // ✅ now we get name from accounts
                 lastLoginAt: DateTime.now(),
+                accountType: accountType,
               ) ??
               UserModel(
                 id: user.id,
                 email: user.email ?? '',
                 fullName: accountName,
+                accountType: accountType,
                 createdAt: DateTime.now(),
                 lastLoginAt: DateTime.now(),
               );
+
+          debugPrint("$accountName + $accountType + ${user.email}");
 
           await UserService().saveUser(userModel);
           debugPrint(

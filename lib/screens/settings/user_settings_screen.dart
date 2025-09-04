@@ -7,6 +7,7 @@ import 'package:call/settings/theme_notifier.dart';
 import 'package:call/widgets/settings/settings_card.dart';
 import 'package:call/widgets/settings/setting_item.dart';
 import 'package:call/widgets/settings/theme_setting_item.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class UserSettingsScreen extends StatelessWidget {
   const UserSettingsScreen({super.key});
@@ -28,34 +29,27 @@ class UserSettingsScreen extends StatelessWidget {
           fontWeight: FontWeight.bold,
         ),
       ),
-      body: const SingleChildScrollView(
-        padding: EdgeInsets.all(16),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             SettingsCard(
               title: 'معلومات الحساب',
               items: [
-                SettingItem(
+                const SettingItem(
                   icon: Icons.person,
                   title: 'تعديل الملف الشخصي',
                   destination: EditProfileScreen(),
                 ),
-              ],
-            ),
-            SizedBox(height: 20),
-            SettingsCard(
-              title: 'الأمان',
-              items: [
                 SettingItem(
-                  icon: Icons.lock,
-                  title: 'تغيير كلمة المرور',
-                  destination: ChangePasswordScreen(),
-                ),
-                SettingItem(
-                  icon: Icons.security,
-                  title: 'الأمان والخصوصية',
-                  destination: PrivacySettingsScreen(),
+                  icon: Icons.exit_to_app_outlined,
+                  title: 'تسجيل الخروج',
+                  destination: const EditProfileScreen(),
+                  onTap: () async {
+                    await Supabase.instance.client.auth.signOut();
+                    Navigator.pushReplacementNamed(context, "/signin");
+                  },
                 ),
               ],
             ),

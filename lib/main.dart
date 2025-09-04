@@ -75,8 +75,7 @@ class MyApp extends StatelessWidget {
         '/signup': (context) => const SignupScreen(),
         '/home': (context) => const HomeScreen(),
         '/create-post': (context) => const CreatePostScreen(),
-        '/add-organization': (context) => const AddOrganizationScreen(),
-        '/organizations': (context) => const OrganizationsScreen(),
+         '/organizations': (context) => const OrganizationsScreen(),
         '/main-tab': (context) => const MainTabScreen(),
       },
     );

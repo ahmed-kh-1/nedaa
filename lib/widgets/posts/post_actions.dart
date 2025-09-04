@@ -2,6 +2,9 @@ import 'package:call/screens/calls/CallsPage.dart';
 import 'package:call/screens/comments/CommentPage.dart';
 import 'package:flutter/material.dart';
 import 'package:call/models/post_model.dart';
+import 'package:provider/provider.dart';
+import 'package:call/providers/post_provider.dart';
+import 'package:call/providers/user_provider.dart';
 
 class PostActions extends StatefulWidget {
   final PostModel post;
@@ -21,10 +24,37 @@ class _PostActionsState extends State<PostActions> {
     _isAdopted = widget.post.isAdopted;
   }
 
-  void _toggleAdopt() {
-    setState(() {
-      _isAdopted = !_isAdopted;
-    });
+  Future<void> _toggleAdopt() async {
+    if (_isAdopted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تم تبني هذه المشكلة بالفعل')),
+      );
+      return;
+    }
+
+    final userProvider = context.read<UserProvider>();
+    final accountType = userProvider.currentUser?.accountType;
+    if (accountType != 'association') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('هذا الإجراء متاح فقط للجمعيات')),
+      );
+      return;
+    }
+
+    final postProvider = context.read<PostProvider>();
+    try {
+      await postProvider.adoptPost(widget.post.postId);
+      setState(() {
+        _isAdopted = true;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تم تبني المشكلة بنجاح')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('فشل تبني المشكلة: $e')),
+      );
+    }
   }
 
   @override

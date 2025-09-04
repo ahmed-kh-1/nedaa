@@ -26,6 +26,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   String _selectedType = 'حالة طارئة';
   File? _selectedImage;
   String? _existingImageUrl; // for edit mode existing image
+  bool _isLocating = false; // loading state for fetching current location only
 
   final List<String> _emergencyTypes = [
     'حالة طارئة',
@@ -61,11 +62,13 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
   Future<void> _getCurrentLocation() async {
     try {
+      setState(() => _isLocating = true);
       LocationService locationService = LocationService();
       final locationLink = await locationService.getLocationLink();
       setState(() {
         _locationController.text = locationLink!;
       });
+      
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -74,6 +77,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
+    } finally {
+      if (mounted) setState(() => _isLocating = false);
     }
   }
 
@@ -247,9 +252,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         scrolledUnderElevation: 0,
         backgroundColor: theme.colorScheme.primary,
       ),
-      body: postProvider.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
+      body: SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: Form(
                 key: _formKey,
@@ -331,7 +334,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                           const SizedBox(height: 24),
                           LocationTextField(
                             controller: _locationController,
-                            isLoading: postProvider.isLoading,
+                            isLoading: _isLocating,
                             onGetLocation: _getCurrentLocation,
                           ),
                         ],

@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:call/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:call/providers/auth_provider.dart';
@@ -53,6 +54,7 @@ class _SignInScreenState extends State<SignInScreen> {
           ),
         ),
       );
+      Provider.of<UserProvider>(context , listen: false).loadUser();
       Navigator.pushReplacementNamed(context, '/main-tab');
     } catch (e) {
       if (!mounted) return;

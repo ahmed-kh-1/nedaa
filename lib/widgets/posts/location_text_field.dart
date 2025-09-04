@@ -29,7 +29,7 @@ class LocationTextField extends StatelessWidget {
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: theme.cardColor,
+            color: theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(10),
             boxShadow: [
               BoxShadow(
@@ -44,15 +44,20 @@ class LocationTextField extends StatelessWidget {
             controller: controller,
             readOnly: true,
             decoration: InputDecoration(
-              hintText: 'اضغط على الأيقونة لاستخدام الموقع الحالي',
+              hintText: 'استخدم موقعي الحالي لإنشاء رابط خرائط Google',
               border: InputBorder.none,
               contentPadding: const EdgeInsets.all(15),
               suffixIcon: IconButton(
+                tooltip: 'استخدم موقعي الآن',
                 icon: isLoading
-                    ? const CircularProgressIndicator()
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
                     : Icon(
                         Icons.my_location,
-                        color: theme.primaryColor,
+                        color: theme.colorScheme.primary,
                       ),
                 onPressed: isLoading ? null : onGetLocation,
               ),
